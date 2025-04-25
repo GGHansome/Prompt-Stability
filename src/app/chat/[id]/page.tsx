@@ -1,20 +1,15 @@
 "use client";
 
-import Chat from "@/components";
-import { getChat } from "@/store/chat-stores";
-import { Message } from "ai";
-import { use, useEffect, useState } from "react";
+import { use } from "react";
+import dynamic from "next/dynamic";
+
+const Chat = dynamic(() => import("./Chat"), { ssr: false });
 
 export default function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = use(props.params);
-  const [messages, setMessages] = useState<Message[]>([]);
-  useEffect(() => {
-    setMessages(getChat(id));
-  }, []);
-
-  return ( 
+  return (
     <>
-      <Chat id={id} initialMessages={messages} />
+      <Chat id={id}/>
     </>
   );
 }
