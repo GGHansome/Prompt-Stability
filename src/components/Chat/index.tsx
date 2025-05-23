@@ -71,6 +71,7 @@ export default function Chat({
 
       <form
         onSubmit={(event) => {
+          console.log(event);
           handleSubmit(event, {
             body: {
               apikey: "23424234",
