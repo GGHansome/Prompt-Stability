@@ -42,15 +42,20 @@ export default function Chat({
     saveChat(id, newMessages);
   };
 
+  
+
   return (
     <>
-      {messages.map((message) => (
-        <div key={message.id}>
-          {message.role === "user" ? "User: " : "AI: "}
-          {message.content}
-          <button onClick={() => handleDelete(message.id)}>Delete</button>
-        </div>
-      ))}
+      {messages.map((message, index) => {
+        console.log('重渲染了', Date.now(), index)
+        return (
+          <div key={message.id}>
+            {message.role === "user" ? "User: " : "AI: "}
+            {message.content}
+            <button onClick={() => handleDelete(message.id)}>Delete</button>
+          </div>
+        );
+      })}
 
       {error && (
         <>

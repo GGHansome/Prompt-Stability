@@ -1,10 +1,11 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { getChat, saveChat } from "@/store/chat-stores";
 import { Message } from "ai";
 import { useChat } from "@ai-sdk/react";
 import Chat from "@/components/Chat/Chat";
+import ChatIndex from "@/components/Chat/index";
 
 export default function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = use(props.params);
@@ -22,7 +23,7 @@ export default function Page(props: { params: Promise<{ id: string }> }) {
     reload,
   } = useChat({
     id,
-    initialMessages:initialMessages,
+    initialMessages: initialMessages,
     // send id and createdAt for each message 因为我统一采用本地缓存所以不需要将id和createdAt发送给后端
     // sendExtraMessageFields:true,
     onFinish: (message) => {
@@ -43,15 +44,29 @@ export default function Page(props: { params: Promise<{ id: string }> }) {
     }
   }, [message]);
 
-  const handleDelete = (_id: string) => {
-    const newMessages = messages.filter((message) => message.id !== _id);
-    setMessages(newMessages);
-    saveChat(id, newMessages);
-  };
+  const handleDelete = useCallback(
+    (_id: string) => {
+      const newMessages = messages.filter((message) => message.id !== _id);
+      setMessages(newMessages);
+      saveChat(id, newMessages);
+    },
+    [id, messages, setMessages]
+  );
 
   return (
     <>
-      <Chat handleDelete={handleDelete} input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmit} status={status} stop={stop} error={error} reload={reload} messages={messages}/>
+      <Chat
+        handleDelete={handleDelete}
+        input={input}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        status={status}
+        stop={stop}
+        error={error}
+        reload={reload}
+        messages={messages}
+      />
+      {/* <ChatIndex id={id} /> */}
     </>
   );
 }

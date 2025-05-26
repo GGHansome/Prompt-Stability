@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
+import { useArgs } from '@storybook/preview-api';
+import React, { memo } from 'react';
 
 import Chat from './Chat';
 import { Card } from 'antd';
@@ -23,12 +24,16 @@ const meta = {
   tags: ['autodocs'],
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    // backgroundColor: { control: 'color' },
+  },
+  args: {
+    handleDelete: () => {},
+    handleSubmit: () => {},
+    stop: () => {},
+    error: undefined,
+    reload: () => {},
   },
   // 应用装饰器到所有story
   decorators: [withLayout],
-  // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-  // args: { onClick: fn() },
 } satisfies Meta<typeof Chat>;
 
 export default meta;
@@ -37,6 +42,24 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Basic: Story = {
   args: {
-    
+    input: "",
+    handleInputChange: () => {},
+    status: 'done',
+    messages: [
+      {
+        id: '1',
+        content: 'Hello, world!',
+        role: 'user',
+      },
+      {
+        id: '2',
+        content: 'Hello, world!',
+        role: 'assistant',
+      },
+    ],
+  },
+  render: (args) => {
+    const [{ input }, updateArgs] = useArgs();
+    return <Chat {...args} input={input} handleInputChange={(e) => updateArgs({ input: e.target.value })} />;
   },
 };
