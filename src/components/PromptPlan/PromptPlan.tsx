@@ -8,7 +8,6 @@ import { lime, gray } from "@ant-design/colors";
 import {
   Button,
   Col,
-  Descriptions,
   Divider,
   Modal,
   Row,
@@ -16,7 +15,8 @@ import {
   Space,
   Tag,
   Typography,
-  Input
+  Input,
+  Flex,
 } from "antd";
 import React, { useState } from "react";
 import styled from "styled-components";
@@ -28,6 +28,16 @@ const { TextArea } = Input;
 
 const StyleText = styled(Text)`
   color: ${gray[3]};
+`;
+
+const LabelText = styled(Text)`
+  color: ${gray[3]};
+  font-size: 11px;
+`;
+
+const ValueText = styled(Text)`
+  color: ${lime[6]};
+  font-size: 11px;
 `;
 
 const FUNCTION_TEMPLATE = `[{
@@ -48,9 +58,10 @@ const FUNCTION_TEMPLATE = `[{
 }]`;
 
 const PromptPlan = (props: Props) => {
+  console.log("PromptPlan")
   const [functionModalVisible, setFunctionModalVisible] = useState(false);
   return (
-    <>
+    <div className="p-6">
       <Row align="middle">
         <Col span={3}>
           <StyleText>Model</StyleText>
@@ -78,28 +89,28 @@ const PromptPlan = (props: Props) => {
         </Col>
       </Row>
       <Row align="middle">
-        <Descriptions
-          column={24}
-          colon={true}
-          labelStyle={{ color: gray[1], fontSize: 11 }}
-          contentStyle={{ color: lime[6], fontSize: 11 }}
-        >
-          <Descriptions.Item label="response_format" span={4}>
-            text
-          </Descriptions.Item>
-          <Descriptions.Item label="temp" span={3}>
-            1.00
-          </Descriptions.Item>
-          <Descriptions.Item label="tokens" span={3}>
-            2048
-          </Descriptions.Item>
-          <Descriptions.Item label="top_p" span={3}>
-            1.00
-          </Descriptions.Item>
-          <Descriptions.Item label="store" span={3}>
-            false
-          </Descriptions.Item>
-        </Descriptions>
+        <Flex gap={16}>
+          <Space>
+            <LabelText>response_format:</LabelText>
+            <ValueText>text</ValueText>
+          </Space>
+          <Space>
+            <LabelText>temp:</LabelText>
+            <ValueText>1.00</ValueText>
+          </Space>
+          <Space>
+            <LabelText>tokens:</LabelText>
+            <ValueText>2048</ValueText>
+          </Space>
+          <Space>
+            <LabelText>top_p:</LabelText>
+            <ValueText>1.00</ValueText>
+          </Space>
+          <Space>
+            <LabelText>store:</LabelText>
+            <ValueText>false</ValueText>
+          </Space>
+        </Flex>
       </Row>
       <Divider />
       <Row align="middle">
@@ -109,6 +120,7 @@ const PromptPlan = (props: Props) => {
         <Col span={20}>
           {new Array(4).fill(0).map((_, index) => (
             <Tag
+              key={index}
               bordered={false}
               icon={<FunctionOutlined />}
               closeIcon
@@ -142,6 +154,7 @@ const PromptPlan = (props: Props) => {
             onChange={(e) => {}}
             placeholder="Describe desired model behavior(tone, tool usage, response style)"
             autoSize={{ minRows: 10, maxRows: 15 }}
+            rows={10}
           />
         </Space>
       </Row>
@@ -166,12 +179,13 @@ const PromptPlan = (props: Props) => {
           <StyleText>
             <Space>
               <InfoCircleOutlined />
-              You can use "[]" to declare one or more utility functions simultaneously
+              You can use "[]" to declare one or more utility functions
+              simultaneously
             </Space>
           </StyleText>
         </Space>
       </Modal>
-    </>
+    </div>
   );
 };
 

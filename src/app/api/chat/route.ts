@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+import { createIdGenerator, smoothStream, streamText } from 'ai';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -11,6 +11,10 @@ export async function POST(req: Request) {
     model: openai('gpt-4o-mini'),
     system: 'You are a helpful assistant.',
     messages,
+    experimental_generateMessageId: createIdGenerator({
+      prefix: 'server',
+      size: 16,
+    }),
   });
 
   return result.toDataStreamResponse({
