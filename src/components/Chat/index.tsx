@@ -1,6 +1,6 @@
 "use client";
 
-import { getChat, saveChat } from "@/store/chat-stores";
+import { getChat, saveChat } from "@/store/chat";
 import { Message, useChat } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 

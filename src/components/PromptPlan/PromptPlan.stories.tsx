@@ -28,7 +28,22 @@ const meta = {
   // 应用装饰器到所有story
   decorators: [withLayout],
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-  // args: { onClick: fn() },
+  args: { 
+    model: 'gpt-4o',
+    adjustment: {
+      response_format: 'json_object',
+      temperature: 0.5,
+      max_tokens: 100,
+      top_p: 1, 
+      frequency_penalty: 0,
+    },
+    tools: ['tool1', 'tool2', 'tool3'],
+    system_message: 'You are a helpful assistant.',
+    setSystemMessage: () => {},
+    setModel: () => {},
+    setAdjustment: () => {},
+    setTools: () => {},
+   },
 } satisfies Meta<typeof PromptPlan>;
 
 export default meta;

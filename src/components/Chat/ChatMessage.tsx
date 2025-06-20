@@ -9,6 +9,7 @@ import {
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { MemoizedMarkdown } from "./Markdown";
 
 const { Text } = Typography;
 
@@ -20,7 +21,7 @@ interface IChatMessageProps {
 const ChatMessage = memo(
   ({ message, handleDelete }: IChatMessageProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    console.log("ChatMessage 组件渲染了", message.id, Date.now());
+    console.log('重渲染chatMessage组件')
     return (
       <Flex
         key={message.id}
@@ -43,7 +44,7 @@ const ChatMessage = memo(
           </Flex>
           <Flex justify={message.role === "user" ? "end" : "start"}>
             <StyledCard
-              className={`inline-block ${
+              className={`${
                 message.role === "user"
                   ? "!bg-blue-500 !rounded-tr-none"
                   : "!bg-gray-100 !rounded-tl-none"
@@ -55,7 +56,7 @@ const ChatMessage = memo(
                   message.role === "user" ? "!text-white" : "!text-black"
                 }`}
               >
-                {message.content}
+                <MemoizedMarkdown  content={message.content} id={message.id} />
               </Text>
             </StyledCard>
           </Flex>

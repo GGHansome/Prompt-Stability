@@ -20,11 +20,16 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "ai": "^4.3.9",
     "antd": "^5.24.7",
+    "immer": "^10.1.1",
+    "marked": "^15.0.12",
     "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "styled-components": "^6.1.18",
-    "styled-jsx": "^5.1.6"
+    "styled-jsx": "^5.1.6",
+    "use-debounce": "^10.0.5",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3",

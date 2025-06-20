@@ -20,8 +20,30 @@ import {
 } from "antd";
 import React, { useState } from "react";
 import styled from "styled-components";
+import SystemInput from "./SystemInput";
 
-type Props = {};
+interface IPromptPlanProps {
+  model: string;
+  adjustment: {
+    response_format: string;
+    temperature: number;
+    max_tokens: number;
+    top_p: number;
+    frequency_penalty: number;
+  };
+  tools: string[];
+  system_message: string;
+  setSystemMessage: (system_message: string) => void;
+  setModel: (model: string) => void;
+  setAdjustment: (adjustment: {
+    response_format: string;
+    temperature: number;
+    max_tokens: number;
+    top_p: number;
+    frequency_penalty: number;
+  }) => void;
+  setTools: (tools: string[]) => void;
+}
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -57,8 +79,18 @@ const FUNCTION_TEMPLATE = `[{
   }
 }]`;
 
-const PromptPlan = (props: Props) => {
-  console.log("PromptPlan")
+const PromptPlan = (props: IPromptPlanProps) => {
+  const {
+    model,
+    adjustment,
+    tools,
+    system_message,
+    setSystemMessage,
+    setModel,
+    setAdjustment,
+    setTools,
+  } = props;
+  console.log("重渲染promptPlan组件");
   const [functionModalVisible, setFunctionModalVisible] = useState(false);
   return (
     <div className="p-6">
@@ -68,20 +100,23 @@ const PromptPlan = (props: Props) => {
         </Col>
         <Col span={20}>
           <Select
-            className="w-28"
+            className="w-32"
             showSearch
             variant="borderless"
             placeholder="Select a model..."
             filterOption={(input, option) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
             }
-            defaultValue="gpt-4o"
+            value={model}
             options={[
               { value: "gpt-4o", label: "gpt-4o" },
               { value: "gpt-4o-mini", label: "gpt-4o-mini" },
               { value: "gpt-4.1", label: "gpt-4.1" },
               { value: "gpt-4.1-mini", label: "gpt-4.1-mini" },
             ]}
+            onChange={(value) => {
+              setModel(value);
+            }}
           />
         </Col>
         <Col span={1}>
@@ -92,24 +127,24 @@ const PromptPlan = (props: Props) => {
         <Flex gap={16}>
           <Space>
             <LabelText>response_format:</LabelText>
-            <ValueText>text</ValueText>
+            <ValueText>{adjustment?.response_format}</ValueText>
           </Space>
           <Space>
             <LabelText>temp:</LabelText>
-            <ValueText>1.00</ValueText>
+            <ValueText>{adjustment?.temperature}</ValueText>
           </Space>
           <Space>
             <LabelText>tokens:</LabelText>
-            <ValueText>2048</ValueText>
+            <ValueText>{adjustment?.max_tokens}</ValueText>
           </Space>
           <Space>
             <LabelText>top_p:</LabelText>
-            <ValueText>1.00</ValueText>
+            <ValueText>{adjustment?.top_p}</ValueText>
           </Space>
-          <Space>
+          {/* <Space>
             <LabelText>store:</LabelText>
-            <ValueText>false</ValueText>
-          </Space>
+            <ValueText>{adjustment.frequency_penalty}</ValueText>
+          </Space> */}
         </Flex>
       </Row>
       <Divider />
@@ -149,12 +184,9 @@ const PromptPlan = (props: Props) => {
       <Row>
         <Space direction="vertical" className="w-full">
           <StyleText>System message</StyleText>
-          <TextArea
-            // value={value}
-            onChange={(e) => {}}
-            placeholder="Describe desired model behavior(tone, tool usage, response style)"
-            autoSize={{ minRows: 10, maxRows: 15 }}
-            rows={10}
+          <SystemInput
+            system_message={system_message}
+            setSystemMessage={setSystemMessage}
           />
         </Space>
       </Row>

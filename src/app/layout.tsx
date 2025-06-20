@@ -11,11 +11,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>
-          <AntdRegistry>
+        <AntdRegistry>
+          <StyledComponentsRegistry>
             <AntProvider>{children}</AntProvider>
-          </AntdRegistry>
-        </StyledComponentsRegistry>
+          </StyledComponentsRegistry>
+        </AntdRegistry>
       </body>
     </html>
   );

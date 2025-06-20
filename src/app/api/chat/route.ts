@@ -6,10 +6,11 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   // console.log(req.json());
-  const { messages, apikey } = await req.json();
+  const { messages, apikey, systemMessage } = await req.json();
+  console.log("systemMessage", systemMessage);
   const result = streamText({
     model: openai('gpt-4o-mini'),
-    system: 'You are a helpful assistant.',
+    system: systemMessage,
     messages,
     experimental_generateMessageId: createIdGenerator({
       prefix: 'server',

@@ -9,10 +9,7 @@ const { TextArea } = Input;
 interface IChatInputProps {
   input: string;
   handleSubmit: (
-    event?: {
-      preventDefault?: () => void;
-    },
-    chatRequestOptions?: ChatRequestOptions
+    event: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>
   ) => void;
   handleInputChange: (
     e:
@@ -30,24 +27,12 @@ export const StyledCard = styled(Card)`
 const ChatInput = memo((props: IChatInputProps) => {
   const { handleSubmit, input, handleInputChange } = props;
   const [isAutoClear, setIsAutoClear] = useState(false);
-
-  const submit = (
-    e:
-      | React.KeyboardEvent<HTMLTextAreaElement>
-      | React.FormEvent<HTMLFormElement>
-  ) => {
-    handleSubmit(e, {
-      body: {
-        apikey: "23424234",
-      },
-    });
-  };
   return (
     <StyledCard className="!bg-gray-50">
       <Space direction="vertical" className="w-full">
         <form
           onSubmit={(e) => {
-            submit(e);
+            handleSubmit(e);
           }}
         >
           <TextArea
@@ -56,7 +41,7 @@ const ChatInput = memo((props: IChatInputProps) => {
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                submit(e);
+                handleSubmit(e);
               }
             }}
             className="!border-none focus:!shadow-none !bg-gray-50"
