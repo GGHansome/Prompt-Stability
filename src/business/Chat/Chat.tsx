@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useStore } from "@/store";
+import { useAppStore, useStore } from "@/store";
 import { createIdGenerator, Message } from "ai";
 import { useChat } from "@ai-sdk/react";
 import ChatComponent from "@/components/Chat/Chat";

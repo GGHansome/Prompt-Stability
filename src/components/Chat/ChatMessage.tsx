@@ -1,7 +1,6 @@
 import { Message } from "ai";
 import { Button, Flex, Space, Typography } from "antd";
 import React, { memo, useState } from "react";
-import { StyledCard } from "./ChatInput";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -9,9 +8,22 @@ import {
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import styled from "styled-components";
 import { MemoizedMarkdown } from "./Markdown";
+import { StyledCard } from "./ChatInput";
 
 const { Text } = Typography;
+
+const StyledText = styled(Text)`
+  pre {
+    background: none;
+    padding: 0;
+    border: none;
+  }
+  p {
+    margin: 0;
+  }
+`;
 
 interface IChatMessageProps {
   message: Message;
@@ -21,7 +33,7 @@ interface IChatMessageProps {
 const ChatMessage = memo(
   ({ message, handleDelete }: IChatMessageProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    console.log('重渲染chatMessage组件')
+    console.log("重渲染chatMessage组件");
     return (
       <Flex
         key={message.id}
@@ -48,16 +60,16 @@ const ChatMessage = memo(
                 message.role === "user"
                   ? "!bg-blue-500 !rounded-tr-none"
                   : "!bg-gray-100 !rounded-tl-none"
-              }`}
+              } w-full`}
               hoverable
             >
-              <Text
+              <StyledText
                 className={`${
                   message.role === "user" ? "!text-white" : "!text-black"
                 }`}
               >
-                <MemoizedMarkdown  content={message.content} id={message.id} />
-              </Text>
+                <MemoizedMarkdown content={message.content} id={message.id} />
+              </StyledText>
             </StyledCard>
           </Flex>
           <Flex

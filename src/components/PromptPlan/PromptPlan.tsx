@@ -15,12 +15,12 @@ import {
   Space,
   Tag,
   Typography,
-  Input,
   Flex,
+  Input,
 } from "antd";
 import React, { useState } from "react";
 import styled from "styled-components";
-import SystemInput from "./SystemInput";
+import { DebounceCodeEditor, DebounceTextArea } from "../Common/DebounceForm";
 
 interface IPromptPlanProps {
   model: string;
@@ -46,7 +46,6 @@ interface IPromptPlanProps {
 }
 
 const { Text } = Typography;
-const { TextArea } = Input;
 
 const StyleText = styled(Text)`
   color: ${gray[3]};
@@ -92,6 +91,42 @@ const PromptPlan = (props: IPromptPlanProps) => {
   } = props;
   console.log("重渲染promptPlan组件");
   const [functionModalVisible, setFunctionModalVisible] = useState(false);
+  const [functionTemplate, setFunctionTemplate] = useState("");
+  const [vaildateJson, setVaildateJson] = useState<{
+    isPass: boolean;
+    errorMessage: string;
+  }>({
+    isPass: true,
+    errorMessage: "",
+  });
+
+  const vaildateFunctionFormat = (functionTemplate: string) => {
+    let parsedFunction: Array<any> | Object = {};
+    let hasName = true;
+    try {
+      if (functionTemplate) {
+        parsedFunction = JSON.parse(functionTemplate);
+        if (Array.isArray(parsedFunction)) {
+          hasName =
+            parsedFunction.length > 0
+              ? parsedFunction.every((item: any) => Object.hasOwn(item, "name"))
+              : false;
+        } else {
+          hasName = Object.hasOwn(parsedFunction, "name");
+        }
+      }
+      setVaildateJson({
+        isPass: hasName,
+        errorMessage: hasName ? "" : "Function name is required",
+      });
+    } catch (error) {
+      setVaildateJson({
+        isPass: false,
+        errorMessage: `${error}`,
+      });
+    }
+  };
+
   return (
     <div className="p-6">
       <Row align="middle">
@@ -184,9 +219,14 @@ const PromptPlan = (props: IPromptPlanProps) => {
       <Row>
         <Space direction="vertical" className="w-full">
           <StyleText>System message</StyleText>
-          <SystemInput
-            system_message={system_message}
-            setSystemMessage={setSystemMessage}
+          <DebounceTextArea
+            onChange={(e) => {
+              setSystemMessage(e.target.value);
+            }}
+            value={system_message}
+            placeholder="Describe desired model behavior(tone, tool usage, response style)"
+            autoSize={{ minRows: 10, maxRows: 15 }}
+            rows={10}
           />
         </Space>
       </Row>
@@ -203,11 +243,18 @@ const PromptPlan = (props: IPromptPlanProps) => {
             The model will intelligently decide to call functions based on input
             it receives from the user.
           </StyleText>
-          <TextArea
-            onChange={(e) => {}}
+          <DebounceCodeEditor
+            status={vaildateJson.isPass ? undefined : "error"}
+            code={functionTemplate}
             placeholder={FUNCTION_TEMPLATE}
-            autoSize={{ minRows: 15, maxRows: 18 }}
+            onChange={(code) => {
+              vaildateFunctionFormat(code);
+              setFunctionTemplate(code);
+            }}
           />
+          <StyleText type={vaildateJson.isPass ? "success" : "danger"}>
+            {vaildateJson.errorMessage}
+          </StyleText>
           <StyleText>
             <Space>
               <InfoCircleOutlined />

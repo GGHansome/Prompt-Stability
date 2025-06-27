@@ -25,6 +25,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.ant-typography p {
-  margin: 0 !important;
+/* 移除 CodeMirror 聚焦时的边框 */
+.cm-focused {
+  outline: none !important;
 }

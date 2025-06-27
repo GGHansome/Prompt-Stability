@@ -2,7 +2,6 @@ import React, { memo, useState } from "react";
 import { Input, Card, Space, Button, Flex } from "antd";
 import { SendOutlined, SyncOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import { ChatRequestOptions } from "ai";
 
 const { TextArea } = Input;
 
@@ -27,6 +26,7 @@ export const StyledCard = styled(Card)`
 const ChatInput = memo((props: IChatInputProps) => {
   const { handleSubmit, input, handleInputChange } = props;
   const [isAutoClear, setIsAutoClear] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
   return (
     <StyledCard className="!bg-gray-50">
       <Space direction="vertical" className="w-full">
@@ -38,8 +38,10 @@ const ChatInput = memo((props: IChatInputProps) => {
           <TextArea
             value={input}
             onChange={handleInputChange}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey && !isComposing) {
                 e.preventDefault();
                 handleSubmit(e);
               }
