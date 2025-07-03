@@ -20,9 +20,11 @@ interface IChatProps {
   error: Error | undefined;
   reload: () => void;
   messages: Message[];
+  model: string;
 }
 
 const Chat = ({
+  model,
   input,
   error,
   status,
@@ -33,13 +35,12 @@ const Chat = ({
   stop,
   reload,
 }: IChatProps) => {
-  console.log('重渲染chat组件')
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 平滑滚动到底部的函数
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ 
-      behavior: 'smooth',
+      behavior: 'instant',
       block: 'end'
     });
   };
@@ -67,6 +68,7 @@ const Chat = ({
               key={message.id}
               message={message}
               handleDelete={handleDelete}
+              model={model}
             />
           ))}
           {/* 用于滚动定位的元素 */}

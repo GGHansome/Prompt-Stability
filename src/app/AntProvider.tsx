@@ -6,7 +6,7 @@ import "@ant-design/v5-patch-for-react-19";
 const AntProvider: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <ConfigProvider theme={{ cssVar: true, hashed: false }}>
-      <App>{children}</App>
+      <App className="h-screen">{children}</App>
     </ConfigProvider>
   );
 };

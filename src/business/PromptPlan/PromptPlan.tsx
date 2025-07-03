@@ -1,8 +1,7 @@
 import React from "react";
 import PromptPlanComponent from "@/components/PromptPlan/PromptPlan";
 import { useAppStore, useStore } from "@/store";
-import { Spin } from "antd";
-
+import { Tool } from "@/store/types";
 interface IPromptPlanProps {
   id: string;
 }
@@ -12,7 +11,6 @@ const PromptPlan = (props: IPromptPlanProps) => {
   const chat = useStore(
     (state) => state.chats[id]
   );
-  console.log("PromptPlan业务组件重渲染");
 
   const setSystemMessage = (system_message: string) => {
     useAppStore.setState((state) => {
@@ -31,10 +29,12 @@ const PromptPlan = (props: IPromptPlanProps) => {
     top_p: number;
     frequency_penalty: number;
   }) => {};
-  const setTools = (tools: string[]) => {};
-  // if (!chat) {
-  //   return <Spin size="large" />;
-  // }
+
+  const setTools = (tools: Tool[]) => {
+    useAppStore.setState((state) => {
+      state.chats[id].tools = tools;
+    });
+  };
   return (  
     <PromptPlanComponent
       key={`prompt-plan-${id}`}

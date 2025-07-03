@@ -1,5 +1,15 @@
 import { Message } from 'ai';
 
+export type Tool = {
+  name: string;
+  description?: string;
+  parameters: {
+    type: string;
+    properties: Record<string, any>;
+    required: string[];
+  };
+}
+
 type Chat = {
   messages: Message[];
   system_message: string;
@@ -12,7 +22,7 @@ type Chat = {
     frequency_penalty: number;
     presence_penalty: number;
   }
-  tools: string[];
+  tools: Tool[];
 }
 
 export interface ChatStore {

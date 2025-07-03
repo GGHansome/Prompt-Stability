@@ -1,8 +1,8 @@
 import TextArea, { TextAreaProps } from "antd/es/input/TextArea";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import React from "react";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { vscodeLight } from '@uiw/codemirror-theme-vscode';
 import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter } from '@codemirror/lint';
@@ -44,7 +44,8 @@ export const DebounceCodeEditor = (props: {
 }) => {
   const { code, onChange, placeholder, status } = props;
   const [localValue, setLocalValue] = useState(code);
-  const [debouncedValue] = useDebounce(localValue, 300);
+  const [debouncedValue] = useDebounce(localValue, 500);
+  const editorRef = useRef<ReactCodeMirrorRef>(null);
   useEffect(() => {
     if (code !== localValue && onChange) {
       onChange(debouncedValue);
@@ -55,6 +56,8 @@ export const DebounceCodeEditor = (props: {
   }, [code]);
   return (
     <CodeMirror
+      autoFocus={true}
+      placeholder={placeholder}
       basicSetup={{
         lineNumbers: false,
         foldGutter: false,
@@ -62,7 +65,8 @@ export const DebounceCodeEditor = (props: {
         highlightActiveLine: false,
         highlightSelectionMatches: false,
       }}
-      defaultValue={code}
+      value={code}
+      ref={editorRef}
       height="360px"
       extensions={[vscodeLight, json(), jsonLinterExtension]}
       onChange={(value) => {

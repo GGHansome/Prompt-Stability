@@ -1,11 +1,12 @@
-import { Message } from "ai";
-import { Button, Flex, Space, Typography } from "antd";
+import { Message, ToolResult } from "ai";
+import { Button, Flex, Space, Spin, Typography } from "antd";
 import React, { memo, useState } from "react";
 import {
   DeleteOutlined,
   EditOutlined,
   RobotOutlined,
   SyncOutlined,
+  ToolOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
@@ -26,14 +27,14 @@ const StyledText = styled(Text)`
 `;
 
 interface IChatMessageProps {
+  model: string;
   message: Message;
   handleDelete: (id: string) => void;
 }
 
 const ChatMessage = memo(
-  ({ message, handleDelete }: IChatMessageProps) => {
+  ({ model, message, handleDelete}: IChatMessageProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    console.log("重渲染chatMessage组件");
     return (
       <Flex
         key={message.id}
@@ -49,10 +50,16 @@ const ChatMessage = memo(
             className={`${message.role === "user" ? "" : "!flex-row-reverse"}`}
           >
             <Text className="!text-xs">
-              {message.role === "user" ? "You" : "Chat-GPT 4.1"}
+              {message.role === "user" ? "You" : `Assistant | ${(message.annotations?.[0] as any)?.model || model}`}
             </Text>
-            {message.role === "user" && <UserOutlined />}
-            {message.role === "assistant" && <RobotOutlined />}
+            {message.role === "user" ? (
+              <UserOutlined />
+            ) : message.role === "assistant" &&
+              message.parts?.some((part) => part.type === "tool-invocation") ? (
+              <ToolOutlined />
+            ) : (
+              <RobotOutlined />
+            )}
           </Flex>
           <Flex justify={message.role === "user" ? "end" : "start"}>
             <StyledCard
@@ -60,7 +67,7 @@ const ChatMessage = memo(
                 message.role === "user"
                   ? "!bg-blue-500 !rounded-tr-none"
                   : "!bg-gray-100 !rounded-tl-none"
-              } w-full`}
+              } max-w-[100%]`}
               hoverable
             >
               <StyledText
@@ -68,7 +75,30 @@ const ChatMessage = memo(
                   message.role === "user" ? "!text-white" : "!text-black"
                 }`}
               >
-                <MemoizedMarkdown content={message.content} id={message.id} />
+                {message.parts?.length === 0 ? <Spin /> : message.parts?.map((part, i) => {
+                  switch (part.type) {
+                    case "text":
+                      return (
+                        <MemoizedMarkdown
+                          key={`${message.id}-${i}`}
+                          content={part.text}
+                          id={message.id}
+                        />
+                      );
+                    case "tool-invocation":
+                      return (
+                        <MemoizedMarkdown
+                          key={`${message.id}-${i}`}
+                          content={`\`\`\`json\n${JSON.stringify(
+                            part.toolInvocation,
+                            null,
+                            2
+                          )}`}
+                          id={message.id}
+                        />
+                      );
+                  }
+                })}
               </StyledText>
             </StyledCard>
           </Flex>
@@ -97,7 +127,9 @@ const ChatMessage = memo(
     return (
       prevProps.message.id === nextProps.message.id &&
       prevProps.message.content === nextProps.message.content &&
-      prevProps.message.role === nextProps.message.role
+      prevProps.message.role === nextProps.message.role &&
+      prevProps.message.parts === nextProps.message.parts &&
+      prevProps.model === nextProps.model
     );
   }
 );

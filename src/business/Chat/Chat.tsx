@@ -10,14 +10,15 @@ interface IChatProps {
 
 const Chat = (props: IChatProps) => {
   const { id } = props;
-  const { getChat, saveChat, systemMessage } = useStore((state) => ({
+  const { getChat, saveChat, systemMessage, tools, model } = useStore((state) => ({
     getChat: state.getChat,
     saveChat: state.saveChat,
     systemMessage: state.chats[id]?.system_message,
+    tools: state.chats[id]?.tools,
+    model: state.chats[id]?.model
   }));
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<Message>();
-  console.log("Chat业务组件重渲染");
   const {
     messages,
     setMessages,
@@ -34,6 +35,7 @@ const Chat = (props: IChatProps) => {
     // send id and createdAt for each message 因为我统一采用本地缓存所以不需要将id和createdAt发送给后端
     // sendExtraMessageFields:true,
     onFinish: (message) => {
+      console.log('onFinish:', message);
       setMessage(message);
     },
     generateId: createIdGenerator({
@@ -51,10 +53,15 @@ const Chat = (props: IChatProps) => {
   }, [id]);
 
   useEffect(() => {
-    if (messages.length > 0) {
-      saveChat(id, messages);
+    if (messages.length > 0 && message) {
+      const endMessages: Message[] = [...messages.slice(0, -1), message];
+      saveChat(id, endMessages);
     }
   }, [message]);
+
+  useEffect(() => {
+    console.log('messages:', messages);
+  }, [messages]);
 
   const handleDelete = useEvent((_id: string) => {
     setMessages((prevMessages) => {
@@ -63,14 +70,14 @@ const Chat = (props: IChatProps) => {
       return newMessages;
     });
   });
-
-  console.log("systemMessage", systemMessage);
   
   const _handleSubmit = (event: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
     event?.preventDefault();
     handleSubmit(event, {
       body: {
         systemMessage,
+        tools,
+        model,
         apiKey: "23424234",
       },
     });
@@ -87,6 +94,7 @@ const Chat = (props: IChatProps) => {
       error={error}
       reload={reload}
       messages={messages}
+      model={model}
     />
   );
 };

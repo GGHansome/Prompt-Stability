@@ -55,8 +55,15 @@ export const Basic: Story = {
         id: '2',
         content: 'Hello, world!',
         role: 'assistant',
+        parts: [
+          {
+            type: 'text',
+            text: 'Hello, world!',
+          },
+        ],
       },
     ],
+    model: 'gpt-4o',
   },
   render: (args) => {
     const [{ input }, updateArgs] = useArgs();

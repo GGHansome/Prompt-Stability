@@ -21,6 +21,7 @@ import {
 import React, { useState } from "react";
 import styled from "styled-components";
 import { DebounceCodeEditor, DebounceTextArea } from "../Common/DebounceForm";
+import { Tool } from "@/store/types";
 
 interface IPromptPlanProps {
   model: string;
@@ -31,7 +32,7 @@ interface IPromptPlanProps {
     top_p: number;
     frequency_penalty: number;
   };
-  tools: string[];
+  tools: Tool[];
   system_message: string;
   setSystemMessage: (system_message: string) => void;
   setModel: (model: string) => void;
@@ -42,7 +43,7 @@ interface IPromptPlanProps {
     top_p: number;
     frequency_penalty: number;
   }) => void;
-  setTools: (tools: string[]) => void;
+  setTools: (tools: Tool[]) => void;
 }
 
 const { Text } = Typography;
@@ -89,9 +90,10 @@ const PromptPlan = (props: IPromptPlanProps) => {
     setAdjustment,
     setTools,
   } = props;
-  console.log("重渲染promptPlan组件");
   const [functionModalVisible, setFunctionModalVisible] = useState(false);
   const [functionTemplate, setFunctionTemplate] = useState("");
+  // -1代表新增，其他数字代表编辑对应的function
+  const [functionModalIndex, setFunctionModalIndex] = useState<number>(-1);
   const [vaildateJson, setVaildateJson] = useState<{
     isPass: boolean;
     errorMessage: string;
@@ -103,6 +105,8 @@ const PromptPlan = (props: IPromptPlanProps) => {
   const vaildateFunctionFormat = (functionTemplate: string) => {
     let parsedFunction: Array<any> | Object = {};
     let hasName = true;
+    let uniqueName = true;
+    let errorMessage = "";
     try {
       if (functionTemplate) {
         parsedFunction = JSON.parse(functionTemplate);
@@ -111,13 +115,23 @@ const PromptPlan = (props: IPromptPlanProps) => {
             parsedFunction.length > 0
               ? parsedFunction.every((item: any) => Object.hasOwn(item, "name"))
               : false;
+          if (hasName) {
+            const names = parsedFunction.map((item: any) => item.name);
+            const uniqueNames = new Set(names);
+            uniqueName = names.length === uniqueNames.size;
+          }    
         } else {
           hasName = Object.hasOwn(parsedFunction, "name");
         }
       }
+      if (!hasName) {
+        errorMessage = "Function name is required";
+      } else if (!uniqueName) {
+        errorMessage = "Function names must be unique";
+      }
       setVaildateJson({
-        isPass: hasName,
-        errorMessage: hasName ? "" : "Function name is required",
+        isPass: hasName && uniqueName,
+        errorMessage,
       });
     } catch (error) {
       setVaildateJson({
@@ -125,6 +139,55 @@ const PromptPlan = (props: IPromptPlanProps) => {
         errorMessage: `${error}`,
       });
     }
+  };
+
+  const defaultFunctionValue = (parsedFunction:any) => {
+    if (!Object.hasOwn(parsedFunction, "parameters")) {
+      parsedFunction["parameters"] = {
+        type: "object",
+        properties: {},
+        required: [],
+      };
+    } else {
+      if (!Object.hasOwn(parsedFunction["parameters"], "properties")) {
+        parsedFunction["parameters"]["properties"] = {};
+      }
+      if (!Object.hasOwn(parsedFunction["parameters"], "required")) {
+        parsedFunction["parameters"]["required"] = [];
+      }
+      if (parsedFunction["parameters"]["type"] !== "object") {
+        parsedFunction["parameters"] = {
+          type: "object",
+          properties: parsedFunction["parameters"]["properties"],
+          required: parsedFunction["parameters"]["required"],
+        };
+      }
+    }
+  }
+
+  const handleFunctionModalOk = () => {
+    if (!vaildateJson.isPass) {
+      return;
+    }
+    const parsedFunction = JSON.parse(functionTemplate);
+    if (Array.isArray(parsedFunction)) {
+      parsedFunction.forEach((item) => {
+        defaultFunctionValue(item)
+      });
+    } else {
+      defaultFunctionValue(parsedFunction)
+    }
+    if (functionModalIndex === -1) {
+      Array.isArray(parsedFunction)
+        ? setTools([...tools, ...parsedFunction])
+        : setTools([...tools, parsedFunction]);
+    } else {
+      const newTools = [...tools];
+      newTools[functionModalIndex] = parsedFunction;
+      setTools(newTools);
+    }
+    setFunctionTemplate("");
+    setFunctionModalVisible(false);
   };
 
   return (
@@ -188,30 +251,52 @@ const PromptPlan = (props: IPromptPlanProps) => {
           <StyleText>Functions</StyleText>
         </Col>
         <Col span={20}>
-          {new Array(4).fill(0).map((_, index) => (
+          {tools?.map((tool,index) => (
             <Tag
-              key={index}
+              key={tool.name}
               bordered={false}
               icon={<FunctionOutlined />}
               closeIcon
-              onClose={() => {}}
+              onClick={()=>{
+                setFunctionModalIndex(index);
+                setFunctionModalVisible(true);
+                setFunctionTemplate(JSON.stringify(tool,null,2));
+              }}
+              onClose={() => {
+                const newTools = [...tools];
+                newTools.splice(index, 1);
+                setTools(newTools);
+              }}
+              className="cursor-pointer hover:!bg-gray-100"
             >
-              Prevent Default
+              {tool.name}
             </Tag>
           ))}
-          <Button
-            type="text"
-            style={{ color: gray[3] }}
-            onClick={() => setFunctionModalVisible(true)}
-          >
-            Create...
-          </Button>
+          {
+            tools?.length === 0 && (
+              <Button
+                type="text"
+                style={{ color: gray[3] }}
+                onClick={() => {
+                  setFunctionModalIndex(-1);
+                  setFunctionTemplate('');
+                  setFunctionModalVisible(true);
+                }}
+              >
+                Create...
+              </Button>
+            )
+          }
         </Col>
         <Col span={1}>
           <Button
             type="text"
             icon={<PlusOutlined />}
-            onClick={() => setFunctionModalVisible(true)}
+            onClick={() => {
+              setFunctionModalIndex(-1);
+              setFunctionTemplate('');
+              setFunctionModalVisible(true);
+            }}
           />
         </Col>
       </Row>
@@ -235,7 +320,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
         title="Function"
         closable
         open={functionModalVisible}
-        onOk={() => {}}
+        onOk={handleFunctionModalOk}
         onCancel={() => setFunctionModalVisible(false)}
       >
         <Space direction="vertical" className="w-full">
