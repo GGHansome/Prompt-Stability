@@ -2,7 +2,6 @@ import {
   FunctionOutlined,
   InfoCircleOutlined,
   PlusOutlined,
-  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { lime, gray } from "@ant-design/colors";
 import {
@@ -16,39 +15,27 @@ import {
   Tag,
   Typography,
   Flex,
-  Input,
 } from "antd";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { DebounceCodeEditor, DebounceTextArea } from "../Common/DebounceForm";
-import { Tool } from "@/store/types";
+import { Adjustment, Tool } from "@/store/types";
+import AdjustmentComponent from "./Adjustment";
 
 interface IPromptPlanProps {
   model: string;
-  adjustment: {
-    response_format: string;
-    temperature: number;
-    max_tokens: number;
-    top_p: number;
-    frequency_penalty: number;
-  };
+  adjustment: Adjustment;
   tools: Tool[];
   system_message: string;
   setSystemMessage: (system_message: string) => void;
   setModel: (model: string) => void;
-  setAdjustment: (adjustment: {
-    response_format: string;
-    temperature: number;
-    max_tokens: number;
-    top_p: number;
-    frequency_penalty: number;
-  }) => void;
+  setAdjustment: (key: keyof Adjustment, value: any) => void;
   setTools: (tools: Tool[]) => void;
 }
 
 const { Text } = Typography;
 
-const StyleText = styled(Text)`
+export const StyleText = styled(Text)`
   color: ${gray[3]};
 `;
 
@@ -119,7 +106,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
             const names = parsedFunction.map((item: any) => item.name);
             const uniqueNames = new Set(names);
             uniqueName = names.length === uniqueNames.size;
-          }    
+          }
         } else {
           hasName = Object.hasOwn(parsedFunction, "name");
         }
@@ -141,7 +128,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
     }
   };
 
-  const defaultFunctionValue = (parsedFunction:any) => {
+  const defaultFunctionValue = (parsedFunction: any) => {
     if (!Object.hasOwn(parsedFunction, "parameters")) {
       parsedFunction["parameters"] = {
         type: "object",
@@ -163,7 +150,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
         };
       }
     }
-  }
+  };
 
   const handleFunctionModalOk = () => {
     if (!vaildateJson.isPass) {
@@ -172,10 +159,10 @@ const PromptPlan = (props: IPromptPlanProps) => {
     const parsedFunction = JSON.parse(functionTemplate);
     if (Array.isArray(parsedFunction)) {
       parsedFunction.forEach((item) => {
-        defaultFunctionValue(item)
+        defaultFunctionValue(item);
       });
     } else {
-      defaultFunctionValue(parsedFunction)
+      defaultFunctionValue(parsedFunction);
     }
     if (functionModalIndex === -1) {
       Array.isArray(parsedFunction)
@@ -198,7 +185,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
         </Col>
         <Col span={20}>
           <Select
-            className="w-32"
+            popupMatchSelectWidth={false}
             showSearch
             variant="borderless"
             placeholder="Select a model..."
@@ -218,18 +205,18 @@ const PromptPlan = (props: IPromptPlanProps) => {
           />
         </Col>
         <Col span={1}>
-          <Button type="text" icon={<UnorderedListOutlined />} />
+          <AdjustmentComponent
+            toolNames={tools?.map((tool) => tool.name) || []}
+            adjustment={adjustment}
+            setAdjustment={setAdjustment}
+          />
         </Col>
       </Row>
       <Row align="middle">
         <Flex gap={16}>
           <Space>
-            <LabelText>response_format:</LabelText>
-            <ValueText>{adjustment?.response_format}</ValueText>
-          </Space>
-          <Space>
             <LabelText>temp:</LabelText>
-            <ValueText>{adjustment?.temperature}</ValueText>
+            <ValueText>{adjustment?.temperature?.toFixed(2)}</ValueText>
           </Space>
           <Space>
             <LabelText>tokens:</LabelText>
@@ -237,12 +224,20 @@ const PromptPlan = (props: IPromptPlanProps) => {
           </Space>
           <Space>
             <LabelText>top_p:</LabelText>
-            <ValueText>{adjustment?.top_p}</ValueText>
+            <ValueText>{adjustment?.top_p?.toFixed(2)}</ValueText>
           </Space>
-          {/* <Space>
-            <LabelText>store:</LabelText>
-            <ValueText>{adjustment.frequency_penalty}</ValueText>
-          </Space> */}
+          {
+            tools?.length > 0 && (
+              <Space>
+                <LabelText>tool_choice:</LabelText>
+                <ValueText>
+                  {typeof adjustment.tool_choice === "object"
+                    ? adjustment.tool_choice.toolName
+                    : adjustment.tool_choice}
+                </ValueText>
+              </Space>
+            )
+          }
         </Flex>
       </Row>
       <Divider />
@@ -251,16 +246,17 @@ const PromptPlan = (props: IPromptPlanProps) => {
           <StyleText>Functions</StyleText>
         </Col>
         <Col span={20}>
-          {tools?.map((tool,index) => (
+          {tools?.map((tool, index) => (
             <Tag
               key={tool.name}
               bordered={false}
               icon={<FunctionOutlined />}
               closeIcon
-              onClick={()=>{
+              onClick={() => {
                 setFunctionModalIndex(index);
                 setFunctionModalVisible(true);
-                setFunctionTemplate(JSON.stringify(tool,null,2));
+                vaildateFunctionFormat(JSON.stringify(tool, null, 2));
+                setFunctionTemplate(JSON.stringify(tool, null, 2));
               }}
               onClose={() => {
                 const newTools = [...tools];
@@ -272,29 +268,31 @@ const PromptPlan = (props: IPromptPlanProps) => {
               {tool.name}
             </Tag>
           ))}
-          {
-            tools?.length === 0 && (
-              <Button
-                type="text"
-                style={{ color: gray[3] }}
-                onClick={() => {
-                  setFunctionModalIndex(-1);
-                  setFunctionTemplate('');
-                  setFunctionModalVisible(true);
-                }}
-              >
-                Create...
-              </Button>
-            )
-          }
+          {tools?.length === 0 && (
+            <Button
+              type="text"
+              style={{ color: gray[3] }}
+              onClick={() => {
+                if(functionModalIndex !== -1){
+                  setFunctionTemplate('')
+                }
+                setFunctionModalIndex(-1);
+                setFunctionModalVisible(true);
+              }}
+            >
+              Create...
+            </Button>
+          )}
         </Col>
         <Col span={1}>
           <Button
             type="text"
             icon={<PlusOutlined />}
             onClick={() => {
+              if(functionModalIndex !== -1){
+                setFunctionTemplate('')
+              }
               setFunctionModalIndex(-1);
-              setFunctionTemplate('');
               setFunctionModalVisible(true);
             }}
           />

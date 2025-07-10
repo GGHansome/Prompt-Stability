@@ -4,24 +4,27 @@ export type Tool = {
   name: string;
   description?: string;
   parameters: {
-    type: string;
-    properties: Record<string, any>;
-    required: string[];
+    type?: string;
+    properties?: Record<string, any>;
+    required?: string[];
   };
+}
+
+export type Adjustment = {
+  max_tokens: number;
+  temperature: number;
+  top_p: number;
+  frequency_penalty: number;
+  presence_penalty: number;
+  tool_choice: "auto" | "none" | "required" | { "type": "tool", "toolName": string }
+  stop_sequences: string[]
 }
 
 type Chat = {
   messages: Message[];
   system_message: string;
   model: string;
-  adjustment: {
-    response_format: 'text' | 'json_object';
-    max_tokens: number;
-    temperature: number;
-    top_p: number;
-    frequency_penalty: number;
-    presence_penalty: number;
-  }
+  adjustment: Adjustment
   tools: Tool[];
 }
 

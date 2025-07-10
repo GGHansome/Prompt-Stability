@@ -45,26 +45,22 @@ export async function POST(req: Request) {
         }),
       });
       result.mergeIntoDataStream(dataStream);
-    }
-  })
-  
+    },
+    onError: error => {
+      if (error == null) {
+        return 'unknown error';
+      }
 
-  // return result.toDataStreamResponse({
-  //   getErrorMessage: error => {
-  //     if (error == null) {
-  //       return 'unknown error';
-  //     }
+      if (typeof error === 'string') {
+        return error;
+      }
 
-  //     if (typeof error === 'string') {
-  //       return error;
-  //     }
+      if (error instanceof Error) {
+        // return (error as any).responseBody;
+        return JSON.stringify(error);
+      }
 
-  //     if (error instanceof Error) {
-  //       // return (error as any).responseBody;
-  //       return JSON.stringify(error);
-  //     }
-
-  //     return JSON.stringify(error);
-  //   },
-  // });
+      return JSON.stringify(error);
+    },
+  });
 }

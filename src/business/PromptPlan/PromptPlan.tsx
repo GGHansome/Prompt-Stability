@@ -1,7 +1,7 @@
 import React from "react";
 import PromptPlanComponent from "@/components/PromptPlan/PromptPlan";
 import { useAppStore, useStore } from "@/store";
-import { Tool } from "@/store/types";
+import { Adjustment, Tool } from "@/store/types";
 interface IPromptPlanProps {
   id: string;
 }
@@ -22,13 +22,12 @@ const PromptPlan = (props: IPromptPlanProps) => {
       state.chats[id].model = model;
     });
   };
-  const setAdjustment = (adjustment: {
-    response_format: string;
-    temperature: number;
-    max_tokens: number;
-    top_p: number;
-    frequency_penalty: number;
-  }) => {};
+
+  const setAdjustment = (key: keyof Adjustment, value: any) => {
+    useAppStore.setState((state) => {
+      state.chats[id].adjustment[key] = value;
+    });
+  };
 
   const setTools = (tools: Tool[]) => {
     useAppStore.setState((state) => {

@@ -31,13 +31,27 @@ const meta = {
   args: { 
     model: 'gpt-4o',
     adjustment: {
-      response_format: 'json_object',
       temperature: 0.5,
       max_tokens: 100,
       top_p: 1, 
       frequency_penalty: 0,
+      presence_penalty: 0,
+      tool_choice: 'auto',
+      stop_sequences: [],
     },
-    tools: ['tool1', 'tool2', 'tool3'],
+    tools: [
+      {
+        name: 'tool1',
+        description: 'tool1 description',
+        parameters: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+          required: ['name'],
+        },
+      }
+    ],
     system_message: 'You are a helpful assistant.',
     setSystemMessage: () => {},
     setModel: () => {},

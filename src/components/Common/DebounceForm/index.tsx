@@ -1,26 +1,23 @@
 import TextArea, { TextAreaProps } from "antd/es/input/TextArea";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import React from "react";
-import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
-import { vscodeLight } from '@uiw/codemirror-theme-vscode';
+import CodeMirror from "@uiw/react-codemirror";
+import { vscodeLight } from "@uiw/codemirror-theme-vscode";
 import { json, jsonParseLinter } from "@codemirror/lang-json";
-import { linter } from '@codemirror/lint';
+import { linter } from "@codemirror/lint";
+import { Select, SelectProps } from "antd";
 
-interface IDebounceTextAreaProps extends TextAreaProps {}
-
-export const DebounceTextArea = (props: IDebounceTextAreaProps) => {
+export const DebounceTextArea = (props: TextAreaProps) => {
   const { value, onChange, ...rest } = props;
   const [localValue, setLocalValue] = useState(value);
   const [debouncedValue] = useDebounce(localValue, 300);
   useEffect(() => {
-    if (value !== localValue && onChange) {
-      onChange?.({
-        target: { value: debouncedValue },
-      } as React.ChangeEvent<HTMLTextAreaElement>);
-    }
+    onChange?.({
+      target: { value: debouncedValue },
+    } as React.ChangeEvent<HTMLTextAreaElement>);
   }, [debouncedValue]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     setLocalValue(value);
   }, [value]);
   return (
@@ -30,6 +27,27 @@ export const DebounceTextArea = (props: IDebounceTextAreaProps) => {
       onChange={(e) => {
         setLocalValue(e.target.value);
       }}
+    />
+  );
+};
+
+export const DebounceSelect = (props: SelectProps) => {
+  const { searchValue = "", onSearch, ...rest } = props;
+  const [localValue, setLocalValue] = useState(searchValue);
+  const [debouncedValue] = useDebounce(localValue, 100);
+  useEffect(() => {
+    onSearch?.(debouncedValue);
+  }, [debouncedValue]);
+  useLayoutEffect(() => {
+    setLocalValue(searchValue);
+  }, [searchValue]);
+  return (
+    <Select
+      searchValue={localValue}
+      onSearch={(value) => {
+        setLocalValue(value);
+      }}
+      {...rest}
     />
   );
 };
@@ -45,15 +63,15 @@ export const DebounceCodeEditor = (props: {
   const { code, onChange, placeholder, status } = props;
   const [localValue, setLocalValue] = useState(code);
   const [debouncedValue] = useDebounce(localValue, 500);
-  const editorRef = useRef<ReactCodeMirrorRef>(null);
+
   useEffect(() => {
-    if (code !== localValue && onChange) {
-      onChange(debouncedValue);
-    }
+    onChange(debouncedValue);
   }, [debouncedValue]);
+
   useEffect(() => {
     setLocalValue(code);
   }, [code]);
+
   return (
     <CodeMirror
       autoFocus={true}
@@ -65,8 +83,7 @@ export const DebounceCodeEditor = (props: {
         highlightActiveLine: false,
         highlightSelectionMatches: false,
       }}
-      value={code}
-      ref={editorRef}
+      value={localValue}
       height="360px"
       extensions={[vscodeLight, json(), jsonLinterExtension]}
       onChange={(value) => {

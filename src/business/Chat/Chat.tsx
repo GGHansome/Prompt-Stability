@@ -59,10 +59,6 @@ const Chat = (props: IChatProps) => {
     }
   }, [message]);
 
-  useEffect(() => {
-    console.log('messages:', messages);
-  }, [messages]);
-
   const handleDelete = useEvent((_id: string) => {
     setMessages((prevMessages) => {
       const newMessages = prevMessages.filter((message) => message.id !== _id);

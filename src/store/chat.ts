@@ -23,12 +23,13 @@ export const chatSlice: StateCreator<
         system_message: '',
         model: 'gpt-4o-mini',
         adjustment: {
-          response_format: 'text',
-          max_tokens: 1000,
-          temperature: 0.5,
-          top_p: 1,
+          max_tokens: 2048,
+          temperature: 1.00,
+          top_p: 1.00,
           frequency_penalty: 0,
           presence_penalty: 0,
+          tool_choice: 'auto',
+          stop_sequences: [],
         },
         tools: [],
       };
