@@ -9,6 +9,7 @@ export const chatSlice: StateCreator<
   ChatStore
 > = (set, get) => ({
   chats: {},
+  setMessages: null,
   
   createChat: () => {
     const id = generateId();

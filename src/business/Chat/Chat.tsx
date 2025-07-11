@@ -15,7 +15,7 @@ const Chat = (props: IChatProps) => {
     saveChat: state.saveChat,
     systemMessage: state.chats[id]?.system_message,
     tools: state.chats[id]?.tools,
-    model: state.chats[id]?.model
+    model: state.chats[id]?.model,
   }));
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<Message>();
@@ -44,6 +44,12 @@ const Chat = (props: IChatProps) => {
     }),
     experimental_throttle: 50,
   });
+
+  useEffect(() => {
+    useAppStore.setState((state) => {
+      state.setMessages = setMessages;
+    });
+  }, [setMessages]);
 
   useEffect(() => {
     const messages = getChat(id);

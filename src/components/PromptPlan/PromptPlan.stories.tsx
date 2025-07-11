@@ -53,10 +53,12 @@ const meta = {
       }
     ],
     system_message: 'You are a helpful assistant.',
+    customMessages: [],
     setSystemMessage: () => {},
     setModel: () => {},
     setAdjustment: () => {},
     setTools: () => {},
+    setMessages: () => {},
    },
 } satisfies Meta<typeof PromptPlan>;
 

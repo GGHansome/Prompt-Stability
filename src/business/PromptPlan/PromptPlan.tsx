@@ -8,9 +8,10 @@ interface IPromptPlanProps {
 
 const PromptPlan = (props: IPromptPlanProps) => {
   const { id } = props;
-  const chat = useStore(
-    (state) => state.chats[id]
-  );
+  const { chat, setMessages } = useStore((state) => ({
+    chat: state.chats[id],
+    setMessages: state.setMessages,
+  }));
 
   const setSystemMessage = (system_message: string) => {
     useAppStore.setState((state) => {
@@ -34,7 +35,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
       state.chats[id].tools = tools;
     });
   };
-  return (  
+  return (
     <PromptPlanComponent
       key={`prompt-plan-${id}`}
       model={chat?.model}
@@ -45,6 +46,11 @@ const PromptPlan = (props: IPromptPlanProps) => {
       setModel={setModel}
       setAdjustment={setAdjustment}
       setTools={setTools}
+      setMessages={setMessages}
+      customMessages={chat?.messages.filter(
+        (message) =>
+          Object.assign({}, ...(message.annotations || []))?.type === "custom"
+      )}
     />
   );
 };

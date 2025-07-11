@@ -1,4 +1,4 @@
-import { Message, ToolResult } from "ai";
+import { Message } from "ai";
 import { Button, Flex, Space, Spin, Typography } from "antd";
 import React, { memo, useState } from "react";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { MemoizedMarkdown } from "./Markdown";
-import { StyledCard } from "./ChatInput";
+import { StyledCard } from "@/components/Common/StyledComponent/inedx";
 
 const { Text } = Typography;
 
@@ -50,7 +50,7 @@ const ChatMessage = memo(
             className={`${message.role === "user" ? "" : "!flex-row-reverse"}`}
           >
             <Text className="!text-xs">
-              {message.role === "user" ? "You" : `Assistant | ${(message.annotations?.[0] as any)?.model || model}`}
+              {message.role === "user" ? "You" : `Assistant | ${Object.assign({}, ...(message.annotations || []))?.model || model}`}
             </Text>
             {message.role === "user" ? (
               <UserOutlined />

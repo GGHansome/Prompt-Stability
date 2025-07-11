@@ -1,7 +1,7 @@
 import React, { memo, useState } from "react";
-import { Input, Card, Space, Button, Flex } from "antd";
+import { Input, Space, Button, Flex } from "antd";
 import { SendOutlined, SyncOutlined } from "@ant-design/icons";
-import styled from "styled-components";
+import { StyledCard } from "../Common/StyledComponent/inedx";
 
 const { TextArea } = Input;
 
@@ -17,19 +17,13 @@ interface IChatInputProps {
   ) => void;
 };
 
-export const StyledCard = styled(Card)`
-  .ant-card-body {
-    padding: 14px;
-  }
-`;
-
 const ChatInput = memo((props: IChatInputProps) => {
   const { handleSubmit, input, handleInputChange } = props;
   const [isAutoClear, setIsAutoClear] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
   return (
     <StyledCard className="!bg-gray-50">
-      <Space direction="vertical" className="w-full">
+      <Flex vertical className="w-full">
         <form
           onSubmit={(e) => {
             handleSubmit(e);
@@ -70,7 +64,7 @@ const ChatInput = memo((props: IChatInputProps) => {
             />
           </Flex>
         </form>
-      </Space>
+      </Flex>
     </StyledCard>
   );
 }, (prevProps, nextProps) => {

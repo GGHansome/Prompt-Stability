@@ -6,7 +6,9 @@ import CodeMirror from "@uiw/react-codemirror";
 import { vscodeLight } from "@uiw/codemirror-theme-vscode";
 import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter } from "@codemirror/lint";
-import { Select, SelectProps } from "antd";
+import { Button, Flex, InputNumber, InputNumberProps, Select, SelectProps, Slider } from "antd";
+import { ReloadOutlined } from "@ant-design/icons";
+import { StyleText } from "@/components/Common/StyledComponent/inedx";
 
 export const DebounceTextArea = (props: TextAreaProps) => {
   const { value, onChange, ...rest } = props;
@@ -95,5 +97,75 @@ export const DebounceCodeEditor = (props: {
           : "!border-gray-300 hover:!border-blue-400 focus:!border-blue-500"
       }`}
     />
+  );
+};
+
+
+interface IStepInputProps {
+  title: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  initValue: number;
+  onChange: InputNumberProps["onChange"];
+}
+
+export const DebounceStepInput: React.FC<IStepInputProps> = ({
+  title,
+  min,
+  max,
+  step,
+  value,
+  initValue,
+  onChange,
+}) => {
+  const [localValue, setLocalValue] = useState<number | null>(value);
+  const [debouncedValue] = useDebounce(localValue, 300);
+  useEffect(() => {
+    if (value !== localValue && onChange) {
+      onChange?.(debouncedValue);
+    }
+  }, [debouncedValue]);
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+  return (
+    <>
+      <Flex justify="space-between" align="center">
+        <StyleText>{title}</StyleText>
+        <Flex gap={2}>
+          {initValue !== value && (
+            <Button
+              type="text"
+              size="small"
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                setLocalValue(initValue);
+              }}
+            />
+          )}
+          <InputNumber
+            min={min}
+            max={max}
+            step={step}
+            value={localValue}
+            onChange={(value) => {
+              setLocalValue(value);
+            }}
+            size="small"
+          />
+        </Flex>
+      </Flex>
+      <Slider
+        min={min}
+        max={max}
+        onChange={(value) => {
+          setLocalValue(value);
+        }}
+        value={typeof localValue === "number" ? localValue : 0}
+        step={step}
+      />
+    </>
   );
 };

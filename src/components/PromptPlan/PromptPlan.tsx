@@ -1,3 +1,4 @@
+import { Message } from "ai";
 import {
   FunctionOutlined,
   InfoCircleOutlined,
@@ -21,23 +22,26 @@ import styled from "styled-components";
 import { DebounceCodeEditor, DebounceTextArea } from "../Common/DebounceForm";
 import { Adjustment, Tool } from "@/store/types";
 import AdjustmentComponent from "./Adjustment";
+import { StyleText } from "../Common/StyledComponent/inedx";
+import AddMessage from "./AddMessage";
+
 
 interface IPromptPlanProps {
   model: string;
   adjustment: Adjustment;
   tools: Tool[];
   system_message: string;
+  customMessages: Message[];
   setSystemMessage: (system_message: string) => void;
   setModel: (model: string) => void;
   setAdjustment: (key: keyof Adjustment, value: any) => void;
   setTools: (tools: Tool[]) => void;
+  setMessages:
+    | ((messages: Message[] | ((messages: Message[]) => Message[])) => void)
+    | null;
 }
 
 const { Text } = Typography;
-
-export const StyleText = styled(Text)`
-  color: ${gray[3]};
-`;
 
 const LabelText = styled(Text)`
   color: ${gray[3]};
@@ -72,10 +76,12 @@ const PromptPlan = (props: IPromptPlanProps) => {
     adjustment,
     tools,
     system_message,
+    customMessages,
     setSystemMessage,
     setModel,
     setAdjustment,
     setTools,
+    setMessages,
   } = props;
   const [functionModalVisible, setFunctionModalVisible] = useState(false);
   const [functionTemplate, setFunctionTemplate] = useState("");
@@ -88,6 +94,8 @@ const PromptPlan = (props: IPromptPlanProps) => {
     isPass: true,
     errorMessage: "",
   });
+
+  console.log('customMessages:', customMessages);
 
   const vaildateFunctionFormat = (functionTemplate: string) => {
     let parsedFunction: Array<any> | Object = {};
@@ -226,18 +234,16 @@ const PromptPlan = (props: IPromptPlanProps) => {
             <LabelText>top_p:</LabelText>
             <ValueText>{adjustment?.top_p?.toFixed(2)}</ValueText>
           </Space>
-          {
-            tools?.length > 0 && (
-              <Space>
-                <LabelText>tool_choice:</LabelText>
-                <ValueText>
-                  {typeof adjustment.tool_choice === "object"
-                    ? adjustment.tool_choice.toolName
-                    : adjustment.tool_choice}
-                </ValueText>
-              </Space>
-            )
-          }
+          {tools?.length > 0 && (
+            <Space>
+              <LabelText>tool_choice:</LabelText>
+              <ValueText>
+                {typeof adjustment.tool_choice === "object"
+                  ? adjustment.tool_choice.toolName
+                  : adjustment.tool_choice}
+              </ValueText>
+            </Space>
+          )}
         </Flex>
       </Row>
       <Divider />
@@ -273,8 +279,8 @@ const PromptPlan = (props: IPromptPlanProps) => {
               type="text"
               style={{ color: gray[3] }}
               onClick={() => {
-                if(functionModalIndex !== -1){
-                  setFunctionTemplate('')
+                if (functionModalIndex !== -1) {
+                  setFunctionTemplate("");
                 }
                 setFunctionModalIndex(-1);
                 setFunctionModalVisible(true);
@@ -289,8 +295,8 @@ const PromptPlan = (props: IPromptPlanProps) => {
             type="text"
             icon={<PlusOutlined />}
             onClick={() => {
-              if(functionModalIndex !== -1){
-                setFunctionTemplate('')
+              if (functionModalIndex !== -1) {
+                setFunctionTemplate("");
               }
               setFunctionModalIndex(-1);
               setFunctionModalVisible(true);
@@ -300,7 +306,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
       </Row>
       <Divider />
       <Row>
-        <Space direction="vertical" className="w-full">
+        <Flex vertical gap={2} className="w-full">
           <StyleText>System message</StyleText>
           <DebounceTextArea
             onChange={(e) => {
@@ -311,8 +317,10 @@ const PromptPlan = (props: IPromptPlanProps) => {
             autoSize={{ minRows: 10, maxRows: 15 }}
             rows={10}
           />
-        </Space>
+        </Flex>
       </Row>
+      <Divider />
+      <AddMessage model={model} customMessages={customMessages} setMessages={setMessages}/>
       <Modal
         width={"60vw"}
         title="Function"
@@ -321,7 +329,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
         onOk={handleFunctionModalOk}
         onCancel={() => setFunctionModalVisible(false)}
       >
-        <Space direction="vertical" className="w-full">
+        <Flex vertical gap={4} className="w-full">
           <StyleText>
             The model will intelligently decide to call functions based on input
             it receives from the user.
@@ -345,7 +353,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
               simultaneously
             </Space>
           </StyleText>
-        </Space>
+        </Flex>
       </Modal>
     </div>
   );

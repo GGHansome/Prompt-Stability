@@ -30,6 +30,7 @@ type Chat = {
 
 export interface ChatStore {
   chats: Record<string, Chat>;
+  setMessages: ((messages: Message[] | ((messages: Message[]) => Message[])) => void) | null;
   createChat: () => string;
   saveChat: (id: string, messages: Message[]) => void;
   deleteChat: (id: string) => void;

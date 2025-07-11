@@ -1,88 +1,15 @@
-import { ReloadOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { UnorderedListOutlined } from "@ant-design/icons";
 import {
   Button,
   Dropdown,
   Flex,
-  InputNumber,
-  InputNumberProps,
   Select,
-  Slider,
   Space,
 } from "antd";
-import React, { useEffect, useState } from "react";
-import { StyleText } from "./PromptPlan";
+import React, { useState } from "react";
+import { StyleText } from "@/components/Common/StyledComponent/inedx";
 import { Adjustment } from "@/store/types";
-import { useDebounce } from "use-debounce";
-import { DebounceSelect } from "../Common/DebounceForm";
-
-interface IStepInputProps {
-  title: string;
-  min: number;
-  max: number;
-  step: number;
-  value: number;
-  initValue: number;
-  onChange: InputNumberProps["onChange"];
-}
-
-const StepInput: React.FC<IStepInputProps> = ({
-  title,
-  min,
-  max,
-  step,
-  value,
-  initValue,
-  onChange,
-}) => {
-  const [localValue, setLocalValue] = useState<number | null>(value);
-  const [debouncedValue] = useDebounce(localValue, 300);
-  useEffect(() => {
-    if (value !== localValue && onChange) {
-      onChange?.(debouncedValue);
-    }
-  }, [debouncedValue]);
-  useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
-  return (
-    <>
-      <Flex justify="space-between" align="center">
-        <StyleText>{title}</StyleText>
-        <Flex gap={2}>
-          {initValue !== value && (
-            <Button
-              type="text"
-              size="small"
-              icon={<ReloadOutlined />}
-              onClick={() => {
-                setLocalValue(initValue);
-              }}
-            />
-          )}
-          <InputNumber
-            min={min}
-            max={max}
-            step={step}
-            value={localValue}
-            onChange={(value) => {
-              setLocalValue(value);
-            }}
-            size="small"
-          />
-        </Flex>
-      </Flex>
-      <Slider
-        min={min}
-        max={max}
-        onChange={(value) => {
-          setLocalValue(value);
-        }}
-        value={typeof localValue === "number" ? localValue : 0}
-        step={step}
-      />
-    </>
-  );
-};
+import { DebounceSelect, DebounceStepInput } from "@/components/Common/DebounceForm";
 
 interface IAdjustmentProps {
   toolNames: string[];
@@ -139,7 +66,7 @@ const AdjustmentComponent = ({
               />
             </Flex>
           )}
-          <StepInput
+          <DebounceStepInput
             title="Temperature"
             min={0}
             max={2}
@@ -150,7 +77,7 @@ const AdjustmentComponent = ({
               setAdjustment("temperature", value);
             }}
           />
-          <StepInput
+          <DebounceStepInput
             title="Max tokens"
             min={1}
             max={16384}
@@ -211,7 +138,7 @@ const AdjustmentComponent = ({
               {adjustment.stop_sequences.length} / 4
             </StyleText>
           </Flex>
-          <StepInput
+          <DebounceStepInput
             title="Top P"
             min={0}
             max={1}
@@ -222,7 +149,7 @@ const AdjustmentComponent = ({
               setAdjustment("top_p", value);
             }}
           />
-          <StepInput
+          <DebounceStepInput
             title="Frequency penalty"
             min={0}
             max={2}
@@ -233,7 +160,7 @@ const AdjustmentComponent = ({
               setAdjustment("frequency_penalty", value);
             }}
           />
-          <StepInput
+          <DebounceStepInput
             title="Presence penalty"
             min={0}
             max={2}

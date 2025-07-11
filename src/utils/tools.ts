@@ -1,3 +1,5 @@
+import { createIdGenerator, Message } from "ai";
+
 // 创建一个WeakMap来存储对象的唯一标识
 const objectIdMap = new WeakMap();
 let objectIdCounter = 0;
@@ -9,3 +11,23 @@ export const getObjectId = (obj: any) => {
   }
   return objectIdMap.get(obj);
 };
+
+export const generateMessageFormat = (model: string, role: "user" | "assistant", content: string) => {
+  const message: Message = {
+    annotations: [{model: model}, {type:"custom"}],
+    id: createIdGenerator({
+      prefix: role === "user" ? "client" : "server",
+      size: 16,
+    }).toString(),
+    role,
+    content,
+    createdAt: new Date(),
+    parts: [
+      {
+        type: "text",
+        text: content,
+      }
+    ],
+  }
+  return message
+}
