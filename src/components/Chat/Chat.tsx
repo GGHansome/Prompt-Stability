@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Flex, Empty } from "antd";
 import { Message } from "ai";
 import ChatMessage from "./ChatMessage";
@@ -52,6 +52,20 @@ const Chat = ({
     scrollToBottom();
   }, [messages]);
 
+  const filteredMessages = useMemo(() => messages.filter(
+    (message) => {
+      const annotationType = Object.assign({}, ...(message.annotations || []))?.type;
+      // 如果不是 custom 类型，保留消息
+      if (annotationType !== "custom") {
+        return true;
+      }
+      // 如果是 custom 类型，检查是否有有效的文本内容
+      return message?.parts?.some(part => 
+        part?.type === "text" && part?.text && part.text.trim()
+      );
+    }
+  ), [messages]);
+
   //这里做细致拆分是因为，流式消息回复的时候，messages会不断变化
   //通过查看源码得知，messages的每个元素message都会是一个新的对象
   //所以不做缓存优化的话，单字的回复都会造成整个历史messages的重渲染
@@ -69,7 +83,7 @@ const Chat = ({
           <Empty description="You conversation will appear here" />
         ) : (
           <>
-            {messages.map((message) => (
+            {filteredMessages.map((message) => (
               <ChatMessage
                 key={message.id}
                 message={message}

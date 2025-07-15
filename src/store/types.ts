@@ -41,3 +41,10 @@ export interface ChatStore {
 export interface AppStore extends ChatStore {
   
 } 
+
+export enum SetMessageType {
+  ADD,
+  DELETE,
+  CHANGE_ROLE,
+  CHANGE_CONTENT,
+}

@@ -15,9 +15,11 @@ export const DebounceTextArea = (props: TextAreaProps) => {
   const [localValue, setLocalValue] = useState(value);
   const [debouncedValue] = useDebounce(localValue, 300);
   useEffect(() => {
-    onChange?.({
-      target: { value: debouncedValue },
-    } as React.ChangeEvent<HTMLTextAreaElement>);
+    if (value !== localValue && onChange) {
+      onChange?.({
+        target: { value: debouncedValue },
+      } as React.ChangeEvent<HTMLTextAreaElement>);
+    }
   }, [debouncedValue]);
   useLayoutEffect(() => {
     setLocalValue(value);
@@ -38,7 +40,9 @@ export const DebounceSelect = (props: SelectProps) => {
   const [localValue, setLocalValue] = useState(searchValue);
   const [debouncedValue] = useDebounce(localValue, 100);
   useEffect(() => {
-    onSearch?.(debouncedValue);
+    if (searchValue !== localValue && onSearch) {
+      onSearch?.(debouncedValue);
+    }
   }, [debouncedValue]);
   useLayoutEffect(() => {
     setLocalValue(searchValue);
@@ -67,7 +71,9 @@ export const DebounceCodeEditor = (props: {
   const [debouncedValue] = useDebounce(localValue, 500);
 
   useEffect(() => {
-    onChange(debouncedValue);
+    if (code !== localValue && onChange) {
+      onChange(debouncedValue);
+    }
   }, [debouncedValue]);
 
   useEffect(() => {

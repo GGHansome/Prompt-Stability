@@ -96,7 +96,7 @@ const AdjustmentComponent = ({
             <DebounceSelect
               suffixIcon={null}
               mode="multiple"
-              open={adjustment.stop_sequences.length < 4 ? true : false}
+              open={adjustment.stop_sequences?.length < 4 ? true : false}
               popupClassName="hidden-dropdown"
               style={{ width: "100%" }}
               value={adjustment.stop_sequences}
@@ -128,14 +128,14 @@ const AdjustmentComponent = ({
                 }
               }}
               onSearch={(value) => {
-                if (adjustment.stop_sequences.length >= 4) {
+                if (adjustment.stop_sequences?.length >= 4) {
                   return;
                 }
                 setStopSequenceInput(value);
               }}
             />
             <StyleText className="!text-[12px] text-right">
-              {adjustment.stop_sequences.length} / 4
+              {adjustment.stop_sequences?.length} / 4
             </StyleText>
           </Flex>
           <DebounceStepInput

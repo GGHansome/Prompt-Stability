@@ -33,8 +33,9 @@ interface IChatMessageProps {
 }
 
 const ChatMessage = memo(
-  ({ model, message, handleDelete}: IChatMessageProps) => {
+  ({ model, message, handleDelete }: IChatMessageProps) => {
     const [isHovered, setIsHovered] = useState(false);
+    const annotationData = Object.assign({}, ...(message.annotations || []));
     return (
       <Flex
         key={message.id}
@@ -50,7 +51,13 @@ const ChatMessage = memo(
             className={`${message.role === "user" ? "" : "!flex-row-reverse"}`}
           >
             <Text className="!text-xs">
-              {message.role === "user" ? "You" : `Assistant | ${Object.assign({}, ...(message.annotations || []))?.model || model}`}
+              {message.role === "user"
+                ? `You${annotationData?.type === "custom" ? " | Custom" : ""}`
+                : `Assistant | ${
+                    annotationData?.type === "custom"
+                      ? "Custom"
+                      : annotationData?.model || model
+                  }`}
             </Text>
             {message.role === "user" ? (
               <UserOutlined />
@@ -75,30 +82,34 @@ const ChatMessage = memo(
                   message.role === "user" ? "!text-white" : "!text-black"
                 }`}
               >
-                {message.parts?.length === 0 ? <Spin /> : message.parts?.map((part, i) => {
-                  switch (part.type) {
-                    case "text":
-                      return (
-                        <MemoizedMarkdown
-                          key={`${message.id}-${i}`}
-                          content={part.text}
-                          id={message.id}
-                        />
-                      );
-                    case "tool-invocation":
-                      return (
-                        <MemoizedMarkdown
-                          key={`${message.id}-${i}`}
-                          content={`\`\`\`json\n${JSON.stringify(
-                            part.toolInvocation,
-                            null,
-                            2
-                          )}`}
-                          id={message.id}
-                        />
-                      );
-                  }
-                })}
+                {message.parts?.length === 0 ? (
+                  <Spin />
+                ) : (
+                  message.parts?.map((part, i) => {
+                    switch (part.type) {
+                      case "text":
+                        return (
+                          <MemoizedMarkdown
+                            key={`${message.id}-${i}`}
+                            content={part.text}
+                            id={message.id}
+                          />
+                        );
+                      case "tool-invocation":
+                        return (
+                          <MemoizedMarkdown
+                            key={`${message.id}-${i}`}
+                            content={`\`\`\`json\n${JSON.stringify(
+                              part.toolInvocation,
+                              null,
+                              2
+                            )}`}
+                            id={message.id}
+                          />
+                        );
+                    }
+                  })
+                )}
               </StyledText>
             </StyledCard>
           </Flex>

@@ -12,13 +12,13 @@ export const getObjectId = (obj: any) => {
   return objectIdMap.get(obj);
 };
 
-export const generateMessageFormat = (model: string, role: "user" | "assistant", content: string) => {
+export const generateMessageFormat = (role: "user" | "assistant" | "system" | "data", content: string, id?: string) => {
   const message: Message = {
-    annotations: [{model: model}, {type:"custom"}],
-    id: createIdGenerator({
+    annotations: [{type:"custom"}],
+    id: id || createIdGenerator({
       prefix: role === "user" ? "client" : "server",
       size: 16,
-    }).toString(),
+    })(),
     role,
     content,
     createdAt: new Date(),

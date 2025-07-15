@@ -26,25 +26,31 @@ export async function POST(req: Request) {
     });
   });
   return createDataStreamResponse({
-    execute: dataStream => {
+    execute: (dataStream) => {
       dataStream.writeData('initialized call');
-      const result = streamText({
-        model: openai(`${model}`),
-        system: systemMessage,
-        messages,
-        tools: tools_json,
-        onFinish: () => {
-          dataStream.writeMessageAnnotation({
-            model: model,
-          });
-          dataStream.writeData('call completed');
-        },
-        experimental_generateMessageId: createIdGenerator({
-          prefix: 'server',
-          size: 16,
-        }),
-      });
-      result.mergeIntoDataStream(dataStream);
+      try {
+        const result = streamText({
+          model: openai(`${model}`),
+          system: systemMessage,
+          messages,
+          tools: tools_json,
+          onFinish: () => {
+            dataStream.writeMessageAnnotation({
+              model: model,
+            });
+            dataStream.writeData('call completed');
+          },
+          experimental_generateMessageId: createIdGenerator({
+            prefix: 'server',
+            size: 16,
+          }),
+        });
+        result.mergeIntoDataStream(dataStream);
+      } catch (error) {
+        dataStream.writeData('call completed');
+        throw error;
+      }
+      
     },
     onError: error => {
       if (error == null) {

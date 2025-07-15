@@ -20,7 +20,7 @@ import {
 import React, { useState } from "react";
 import styled from "styled-components";
 import { DebounceCodeEditor, DebounceTextArea } from "../Common/DebounceForm";
-import { Adjustment, Tool } from "@/store/types";
+import { Adjustment, SetMessageType, Tool } from "@/store/types";
 import AdjustmentComponent from "./Adjustment";
 import { StyleText } from "../Common/StyledComponent/inedx";
 import AddMessage from "./AddMessage";
@@ -36,9 +36,7 @@ interface IPromptPlanProps {
   setModel: (model: string) => void;
   setAdjustment: (key: keyof Adjustment, value: any) => void;
   setTools: (tools: Tool[]) => void;
-  setMessages:
-    | ((messages: Message[] | ((messages: Message[]) => Message[])) => void)
-    | null;
+  setMessages: (sign: SetMessageType | number, index: number, content: any) => void;
 }
 
 const { Text } = Typography;
@@ -94,8 +92,6 @@ const PromptPlan = (props: IPromptPlanProps) => {
     isPass: true,
     errorMessage: "",
   });
-
-  console.log('customMessages:', customMessages);
 
   const vaildateFunctionFormat = (functionTemplate: string) => {
     let parsedFunction: Array<any> | Object = {};
@@ -320,7 +316,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
         </Flex>
       </Row>
       <Divider />
-      <AddMessage model={model} customMessages={customMessages} setMessages={setMessages}/>
+      <AddMessage customMessages={customMessages} setMessages={setMessages}/>
       <Modal
         width={"60vw"}
         title="Function"
