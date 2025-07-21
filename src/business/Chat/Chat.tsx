@@ -4,6 +4,7 @@ import { createIdGenerator, Message } from "ai";
 import { useChat } from "@ai-sdk/react";
 import ChatComponent from "@/components/Chat/Chat";
 import { useEvent } from "@/utils/hooks";
+import { generateMessageFormat } from "@/utils/tools";
 interface IChatProps {
   id: string;
 }
@@ -22,6 +23,7 @@ const Chat = (props: IChatProps) => {
   const {
     messages,
     setMessages,
+    setInput,
     input,
     handleInputChange,
     handleSubmit,
@@ -75,12 +77,32 @@ const Chat = (props: IChatProps) => {
   
   const _handleSubmit = (event: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
     event?.preventDefault();
+    if (!input.trim()) {
+      setInput("");
+      return;
+    }
+    const message = generateMessageFormat("user", input, undefined, false);
+    const filterMessages = [...messages, message].filter((message) => {
+      const annotationType = Object.assign(
+        {},
+        ...(message.annotations || [])
+      )?.type;
+      // 如果不是 custom 类型，保留消息
+      if (annotationType !== "custom") {
+        return true;
+      }
+      // 如果是 custom 类型，检查是否有有效的文本内容
+      return message?.parts?.some(
+        (part) => part?.type === "text" && part?.text && part.text.trim()
+      );
+    });
     handleSubmit(event, {
       body: {
         systemMessage,
         tools,
         model,
         apiKey: "23424234",
+        messages: filterMessages
       },
     });
   };

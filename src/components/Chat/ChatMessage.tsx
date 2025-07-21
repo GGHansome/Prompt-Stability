@@ -82,7 +82,15 @@ const ChatMessage = memo(
                   message.role === "user" ? "!text-white" : "!text-black"
                 }`}
               >
-                {message.parts?.length === 0 ? (
+                {!message.parts?.some((part) =>
+                  [
+                    "text",
+                    "reasoning",
+                    "tool-invocation",
+                    "source",
+                    "file",
+                  ].includes(part.type)
+                ) ? (
                   <Spin />
                 ) : (
                   message.parts?.map((part, i) => {

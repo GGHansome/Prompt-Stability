@@ -12,9 +12,9 @@ export const getObjectId = (obj: any) => {
   return objectIdMap.get(obj);
 };
 
-export const generateMessageFormat = (role: "user" | "assistant" | "system" | "data", content: string, id?: string) => {
+export const generateMessageFormat = (role: "user" | "assistant" | "system" | "data", content: string, id?: string, isCustom?: boolean) => {
   const message: Message = {
-    annotations: [{type:"custom"}],
+    annotations: isCustom ? [{type:"custom"}] : [],
     id: id || createIdGenerator({
       prefix: role === "user" ? "client" : "server",
       size: 16,

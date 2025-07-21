@@ -62,7 +62,9 @@ const PromptPlan = (props: IPromptPlanProps) => {
               customMessages[customMessages.length - 1]?.role === "user"
                 ? "assistant"
                 : "user",
-              content
+              content,
+              undefined,
+              true
             ),
             ...noCustomMessages,
           ];
@@ -88,7 +90,8 @@ const PromptPlan = (props: IPromptPlanProps) => {
           customMessages[index] = generateMessageFormat(
             customMessages[index]?.role,
             content,
-            customMessages[index]?.id
+            customMessages[index]?.id,
+            true
           );
           newMessages = [...customMessages, ...noCustomMessages];
           break;

@@ -15,7 +15,7 @@ interface IChatProps {
   handleSubmit: (
     event:
       | React.FormEvent<HTMLFormElement>
-      | React.KeyboardEvent<HTMLTextAreaElement>
+      | React.KeyboardEvent<HTMLTextAreaElement>  
   ) => void;
   status: string;
   stop: () => void;
@@ -38,6 +38,16 @@ const Chat = ({
   reload,
 }: IChatProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const autoScrollEnabledRef = useRef<boolean>(true); // 控制是否自动滚动
+
+  // 检查是否在底部
+  const isAtBottom = () => {
+    if (!chatContainerRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    // 给一个小的容差值，避免因为像素误差导致的问题
+    return scrollHeight - scrollTop - clientHeight < 50;
+  };
 
   // 平滑滚动到底部的函数
   const scrollToBottom = () => {
@@ -47,37 +57,70 @@ const Chat = ({
     });
   };
 
-  // 当消息变化时自动滚动到底部
+  // 监听用户滚动行为
+  const handleScroll = () => {
+    
+    // 用户主动滚动了，禁用自动滚动
+    if (autoScrollEnabledRef.current) {
+      autoScrollEnabledRef.current = false;
+    }
+    
+    // 如果用户滚动到底部，重新启用自动滚动
+    if (isAtBottom()) {
+      autoScrollEnabledRef.current = true;
+    }
+  };
+
+  // 当消息变化时，如果自动滚动启用就滚动到底部
   useEffect(() => {
-    scrollToBottom();
+    if (autoScrollEnabledRef.current) {
+      scrollToBottom();
+    }
   }, [messages]);
 
-  const filteredMessages = useMemo(() => messages.filter(
-    (message) => {
-      const annotationType = Object.assign({}, ...(message.annotations || []))?.type;
-      // 如果不是 custom 类型，保留消息
-      if (annotationType !== "custom") {
-        return true;
-      }
-      // 如果是 custom 类型，检查是否有有效的文本内容
-      return message?.parts?.some(part => 
-        part?.type === "text" && part?.text && part.text.trim()
-      );
-    }
-  ), [messages]);
+  const filteredMessages = useMemo(
+    () =>
+      messages.filter((message) => {
+        const annotationType = Object.assign(
+          {},
+          ...(message.annotations || [])
+        )?.type;
+        // 如果不是 custom 类型，保留消息
+        if (annotationType !== "custom") {
+          return true;
+        }
+        // 如果是 custom 类型，检查是否有有效的文本内容
+        return message?.parts?.some(
+          (part) => part?.type === "text" && part?.text && part.text.trim()
+        );
+      }),
+    [messages]
+  );
+
+  const _handleSubmit = (
+    event:
+      | React.FormEvent<HTMLFormElement>
+      | React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    // 发送消息时启用自动滚动
+    autoScrollEnabledRef.current = true;
+    handleSubmit(event);
+  };
 
   //这里做细致拆分是因为，流式消息回复的时候，messages会不断变化
   //通过查看源码得知，messages的每个元素message都会是一个新的对象
   //所以不做缓存优化的话，单字的回复都会造成整个历史messages的重渲染
   return (
     <Flex vertical className="w-full h-screen">
-      <Flex 
+            <Flex 
+        ref={chatContainerRef}
         vertical 
         flex={1} 
         className="overflow-y-auto !p-6"
         justify={messages.length === 0 ? "center" : "flex-start"}
         align={messages.length === 0 ? "center" : "stretch"}
         gap={16}
+        onScroll={handleScroll}
       >
         {messages.length === 0 ? (
           <Empty description="You conversation will appear here" />
@@ -100,7 +143,7 @@ const Chat = ({
         <ChatInput
           input={input}
           handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
+          handleSubmit={_handleSubmit}
         />
       </div>
     </Flex>
