@@ -15,7 +15,7 @@ interface IChatProps {
   handleSubmit: (
     event:
       | React.FormEvent<HTMLFormElement>
-      | React.KeyboardEvent<HTMLTextAreaElement>  
+      | React.KeyboardEvent<HTMLTextAreaElement>
   ) => void;
   status: string;
   stop: () => void;
@@ -59,12 +59,10 @@ const Chat = ({
 
   // 监听用户滚动行为
   const handleScroll = () => {
-    
     // 用户主动滚动了，禁用自动滚动
     if (autoScrollEnabledRef.current) {
       autoScrollEnabledRef.current = false;
     }
-    
     // 如果用户滚动到底部，重新启用自动滚动
     if (isAtBottom()) {
       autoScrollEnabledRef.current = true;
@@ -112,10 +110,10 @@ const Chat = ({
   //所以不做缓存优化的话，单字的回复都会造成整个历史messages的重渲染
   return (
     <Flex vertical className="w-full h-screen">
-            <Flex 
+      <Flex
         ref={chatContainerRef}
-        vertical 
-        flex={1} 
+        vertical
+        flex={1}
         className="overflow-y-auto !p-6"
         justify={messages.length === 0 ? "center" : "flex-start"}
         align={messages.length === 0 ? "center" : "stretch"}
