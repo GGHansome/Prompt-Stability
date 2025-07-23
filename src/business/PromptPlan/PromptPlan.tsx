@@ -37,7 +37,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
   };
 
   const setCustomMessage = (sign: SetMessageType | number, index: number, content: any) => {
-    const customMessages = chat?.customMessages || [];
+    const customMessages = chat?.custom_messages || [];
     switch (sign) {
       case SetMessageType.ADD:
         const newRole = customMessages[customMessages.length - 1]?.role === "user" ? "assistant" : "user";
@@ -50,21 +50,21 @@ const PromptPlan = (props: IPromptPlanProps) => {
         useAppStore.setState((state) => {
           if (state.chats[id]) {
             // @ts-ignore
-            state.chats[id].customMessages = [...customMessages, newMessage];
+            state.chats[id].custom_messages = [...customMessages, newMessage];
           }
         });
         break;
       case SetMessageType.DELETE:
         useAppStore.setState((state) => {
           if (state.chats[id]) {
-            state.chats[id].customMessages = customMessages.filter((_, i) => i !== index);
+            state.chats[id].custom_messages = customMessages.filter((_, i) => i !== index);
           }
         });
         break;
       case SetMessageType.CHANGE_ROLE:
         useAppStore.setState((state) => {
           if (state.chats[id]) {
-            state.chats[id].customMessages[index].role = content;
+            state.chats[id].custom_messages[index].role = content;
           }
         });
         break;
@@ -77,8 +77,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
         );
         useAppStore.setState((state) => {
           if (state.chats[id]) {
-            // @ts-ignore
-            state.chats[id].customMessages[index] = updatedMessage;
+            state.chats[id].custom_messages[index] = updatedMessage;
           }
         });
         break;
@@ -91,7 +90,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
       adjustment={chat?.adjustment}
       tools={chat?.tools}
       system_message={chat?.system_message}
-      customMessages={chat?.customMessages}
+      customMessages={chat?.custom_messages}
       setSystemMessage={setSystemMessage}
       setModel={setModel}
       setAdjustment={setAdjustment}

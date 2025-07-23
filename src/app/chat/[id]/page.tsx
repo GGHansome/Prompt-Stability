@@ -15,12 +15,12 @@ export default function Page(props: { params: Promise<{ id: string }> }) {
         <Splitter.Panel collapsible defaultSize="50%" min="40%" max="60%">
           <PromptPlan id={id} />
         </Splitter.Panel>
-        {/* <Splitter.Panel defaultSize="50%" min="40%" max="60%">
-          <Chat id={id} />
-        </Splitter.Panel> */}
         <Splitter.Panel defaultSize="50%" min="40%" max="60%">
-          <MultipleTest id={id} />
+          <Chat id={id} />
         </Splitter.Panel>
+        {/* <Splitter.Panel defaultSize="50%" min="40%" max="60%">
+          <MultipleTest id={id} />
+        </Splitter.Panel> */}
       </Splitter>
     </>
   );

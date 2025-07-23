@@ -20,9 +20,11 @@ export type Adjustment = {
   stop_sequences: string[]
 }
 
+
+
 type Chat = {
   messages: Message[];
-  customMessages: Message[];
+  custom_messages: Message[];
   system_message: string;
   model: string;
   adjustment: Adjustment

@@ -15,7 +15,7 @@ const Chat = (props: IChatProps) => {
     getChat: state.getChat,
     saveChat: state.saveChat,
     systemMessage: state.chats[id]?.system_message,
-    customMessages: state.chats[id]?.customMessages,
+    customMessages: state.chats[id]?.custom_messages,
     tools: state.chats[id]?.tools,
     model: state.chats[id]?.model,
   }));

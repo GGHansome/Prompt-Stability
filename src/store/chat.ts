@@ -20,7 +20,7 @@ export const chatSlice: StateCreator<
       }
       state.chats[id] = {
         messages: [],
-        customMessages: [],
+        custom_messages: [],
         system_message: '',
         model: 'gpt-4o-mini',
         adjustment: {
@@ -61,7 +61,7 @@ export const chatSlice: StateCreator<
   cleanEmptyChats: () => {
     set((state) => {
       for (const chatId in state.chats) {
-        if (state.chats[chatId].messages.length === 0 && state.chats[chatId].customMessages.length === 0) {
+        if (state.chats[chatId].messages.length === 0 && state.chats[chatId].custom_messages.length === 0) {
           delete state.chats[chatId];
         }
       }
