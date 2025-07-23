@@ -1,17 +1,10 @@
 import { openai } from '@ai-sdk/openai';
 import { createIdGenerator, jsonSchema, tool, streamText, createDataStreamResponse } from 'ai';
-import { Message } from 'ai';
 import { Tool } from '@/store/types';
+import { ChatRequestBody } from '../type';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-interface ChatRequestBody {
-  messages: Message[];
-  apikey: string;
-  systemMessage: string;
-  tools: Tool[];
-  model: string;
-}
 
 export async function POST(req: Request) {
   const { messages, apikey, systemMessage, tools, model }: ChatRequestBody = await req.json();

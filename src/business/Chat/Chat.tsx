@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAppStore, useStore } from "@/store";
+import { useStore } from "@/store";
 import { createIdGenerator, Message } from "ai";
 import { useChat } from "@ai-sdk/react";
 import ChatComponent from "@/components/Chat/Chat";
@@ -11,10 +11,11 @@ interface IChatProps {
 
 const Chat = (props: IChatProps) => {
   const { id } = props;
-  const { getChat, saveChat, systemMessage, tools, model } = useStore((state) => ({
+  const { getChat, saveChat, systemMessage, customMessages, tools, model } = useStore((state) => ({
     getChat: state.getChat,
     saveChat: state.saveChat,
     systemMessage: state.chats[id]?.system_message,
+    customMessages: state.chats[id]?.customMessages,
     tools: state.chats[id]?.tools,
     model: state.chats[id]?.model,
   }));
@@ -48,12 +49,6 @@ const Chat = (props: IChatProps) => {
   });
 
   useEffect(() => {
-    useAppStore.setState((state) => {
-      state.setMessages = setMessages;
-    });
-  }, [setMessages]);
-
-  useEffect(() => {
     const messages = getChat(id);
     if (messages?.length > 0) {
       setInitialMessages(messages);
@@ -82,27 +77,19 @@ const Chat = (props: IChatProps) => {
       return;
     }
     const message = generateMessageFormat("user", input, undefined, false);
-    const filterMessages = [...messages, message].filter((message) => {
-      const annotationType = Object.assign(
-        {},
-        ...(message.annotations || [])
-      )?.type;
-      // 如果不是 custom 类型，保留消息
-      if (annotationType !== "custom") {
-        return true;
-      }
-      // 如果是 custom 类型，检查是否有有效的文本内容
+    const filterEmptyCustomMessages = customMessages.filter((message) => {
       return message?.parts?.some(
         (part) => part?.type === "text" && part?.text && part.text.trim()
       );
-    });
+    })  
+    const newMessages = [...filterEmptyCustomMessages, ...messages, message]
     handleSubmit(event, {
       body: {
         systemMessage,
         tools,
         model,
         apiKey: "23424234",
-        messages: filterMessages
+        messages: newMessages
       },
     });
   };
@@ -118,6 +105,7 @@ const Chat = (props: IChatProps) => {
       error={error}
       reload={reload}
       messages={messages}
+      customMessages={customMessages}
       model={model}
     />
   );

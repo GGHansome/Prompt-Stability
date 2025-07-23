@@ -29,13 +29,13 @@ const StyledText = styled(Text)`
 interface IChatMessageProps {
   model: string;
   message: Message;
+  isCustom?: boolean;
   handleDelete: (id: string) => void;
 }
 
 const ChatMessage = memo(
-  ({ model, message, handleDelete }: IChatMessageProps) => {
+  ({ model, message, isCustom, handleDelete }: IChatMessageProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    const annotationData = Object.assign({}, ...(message.annotations || []));
     return (
       <Flex
         key={message.id}
@@ -52,12 +52,8 @@ const ChatMessage = memo(
           >
             <Text className="!text-xs">
               {message.role === "user"
-                ? `You${annotationData?.type === "custom" ? " | Custom" : ""}`
-                : `Assistant | ${
-                    annotationData?.type === "custom"
-                      ? "Custom"
-                      : annotationData?.model || model
-                  }`}
+                ? `You${isCustom ? " | Custom" : ""}`
+                : `Assistant | ${isCustom ? "Custom" : model}`}
             </Text>
             {message.role === "user" ? (
               <UserOutlined />

@@ -14,7 +14,6 @@ export const getObjectId = (obj: any) => {
 
 export const generateMessageFormat = (role: "user" | "assistant" | "system" | "data", content: string, id?: string, isCustom?: boolean) => {
   const message: Message = {
-    annotations: isCustom ? [{type:"custom"}] : [],
     id: id || createIdGenerator({
       prefix: role === "user" ? "client" : "server",
       size: 16,

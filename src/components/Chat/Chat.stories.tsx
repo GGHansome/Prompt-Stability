@@ -45,6 +45,7 @@ export const Basic: Story = {
     input: "",
     handleInputChange: () => {},
     status: 'done',
+    customMessages: [],
     messages: Array.from({length: 20}).map((_, index) => ({
       id: index.toString(),
       content: 'Hello, world!',

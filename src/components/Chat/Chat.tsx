@@ -22,6 +22,7 @@ interface IChatProps {
   error: Error | undefined;
   reload: () => void;
   messages: Message[];
+  customMessages: Message[];
   model: string;
 }
 
@@ -31,6 +32,7 @@ const Chat = ({
   error,
   status,
   messages = [],
+  customMessages = [],
   handleDelete,
   handleInputChange,
   handleSubmit,
@@ -76,23 +78,14 @@ const Chat = ({
     }
   }, [messages]);
 
-  const filteredMessages = useMemo(
+  const filteredEmptyCustomMessages = useMemo(
     () =>
-      messages.filter((message) => {
-        const annotationType = Object.assign(
-          {},
-          ...(message.annotations || [])
-        )?.type;
-        // 如果不是 custom 类型，保留消息
-        if (annotationType !== "custom") {
-          return true;
-        }
-        // 如果是 custom 类型，检查是否有有效的文本内容
+      customMessages.filter((message) => {
         return message?.parts?.some(
           (part) => part?.type === "text" && part?.text && part.text.trim()
         );
       }),
-    [messages]
+    [customMessages]
   );
 
   const _handleSubmit = (
@@ -108,6 +101,7 @@ const Chat = ({
   //这里做细致拆分是因为，流式消息回复的时候，messages会不断变化
   //通过查看源码得知，messages的每个元素message都会是一个新的对象
   //所以不做缓存优化的话，单字的回复都会造成整个历史messages的重渲染
+  const isEmptyMessages = messages.length === 0 && filteredEmptyCustomMessages.length === 0
   return (
     <Flex vertical className="w-full h-screen">
       <Flex
@@ -115,16 +109,25 @@ const Chat = ({
         vertical
         flex={1}
         className="overflow-y-auto !p-6"
-        justify={messages.length === 0 ? "center" : "flex-start"}
-        align={messages.length === 0 ? "center" : "stretch"}
+        justify={isEmptyMessages ? "center" : "flex-start"}
+        align={isEmptyMessages ? "center" : "stretch"}
         gap={16}
         onScroll={handleScroll}
       >
-        {messages.length === 0 ? (
+        {isEmptyMessages ? (
           <Empty description="You conversation will appear here" />
         ) : (
           <>
-            {filteredMessages.map((message) => (
+            {filteredEmptyCustomMessages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                message={message}
+                handleDelete={handleDelete}
+                model={model}
+                isCustom
+              />
+            ))}
+            {messages.map((message) => (
               <ChatMessage
                 key={message.id}
                 message={message}
