@@ -10,6 +10,7 @@ export const StyleText = styled(Text)`
 
 export const StyledCard = styled(Card)`
   .ant-card-body {
+    height: 100%;
     padding: 14px;
   }
 `;

@@ -30,3 +30,36 @@ export const generateMessageFormat = (role: "user" | "assistant" | "system" | "d
   }
   return message
 }
+
+// Response工具函数类型定义
+interface ApiResponse<T = any> {
+  status: 'success' | 'error';
+  data?: T;
+  message?: string;
+}
+
+// 创建API响应的工具函数
+export const createApiResponse = <T = any>(
+  data?: T,
+  error?: any
+): Response => {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (error) {
+    const response: ApiResponse = {
+      status: 'error',
+      message: error instanceof Error ? error.message : String(error),
+    }; 
+    return new Response(JSON.stringify(response), {
+      headers
+    });
+  }
+  const response: ApiResponse<T> = {
+    status: 'success',
+    data,
+  };
+  return new Response(JSON.stringify(response), {
+    headers,
+  });
+};

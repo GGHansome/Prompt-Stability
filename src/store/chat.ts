@@ -1,5 +1,5 @@
 import { generateId, Message } from 'ai';
-import { StateCreator,useStore } from 'zustand';
+import { StateCreator, useStore } from 'zustand';
 import { AppStore, ChatStore } from './types';
 
 export const chatSlice: StateCreator<
@@ -13,11 +13,6 @@ export const chatSlice: StateCreator<
   createChat: () => {
     const id = generateId();
     set((state) => {
-      for (const chatId in state.chats) {
-        if (state.chats[chatId].messages.length === 0) {
-          delete state.chats[chatId];
-        }
-      }
       state.chats[id] = {
         messages: [],
         custom_messages: [],
@@ -35,6 +30,11 @@ export const chatSlice: StateCreator<
         multiple_test: {
           expected_response: '',
           test_number: 1,
+          multiple_response_messages: [],
+        },
+        optimization: {
+          suggest: '',
+          example: '',
         },
         tools: [],
       };
@@ -43,7 +43,7 @@ export const chatSlice: StateCreator<
   },
 
   getChat: (id: string) => {
-    return get().chats[id].messages;
+    return get().chats[id]?.messages;
   },
 
   saveChat: (id: string, messages: Message[]) => {
@@ -61,7 +61,7 @@ export const chatSlice: StateCreator<
   cleanEmptyChats: () => {
     set((state) => {
       for (const chatId in state.chats) {
-        if (state.chats[chatId].messages.length === 0 && state.chats[chatId].custom_messages.length === 0) {
+        if (state.chats[chatId].messages.length === 0 && state.chats[chatId].custom_messages.length === 0 && state.chats[chatId].system_message === '') {
           delete state.chats[chatId];
         }
       }

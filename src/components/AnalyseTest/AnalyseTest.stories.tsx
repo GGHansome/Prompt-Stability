@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from '@storybook/preview-api';
 import React, { memo } from 'react';
 
-import MultipleTest from './MultipleTest';
+import AnalyseTest from './AnalyseTest';
 import { Card } from 'antd';
 
 // 创建一个布局装饰器组件
@@ -14,8 +14,8 @@ const withLayout = (Story: any) => (
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: 'MultipleTest',
-  component: MultipleTest,
+  title: 'AnalyseTest',
+  component: AnalyseTest,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: 'centered',
@@ -26,23 +26,19 @@ const meta = {
   argTypes: {
   },
   args: {
-    testNumber: 10,
-    expectedResponse: 'test',
-    setTestNumber: () => {},
-    setExpectedResponse: () => {},
-    multipleResponseMessages: [],
-    onStart: () => {},
-    onClear: () => {},
-    onRefresh: () => {},
-    isLoading: false,
-    canStart: {
-      status: true,
-      message: ''
-    }
+    testReport: {
+      averageSimilarity: 83,
+      highestSimilarity: 83,
+      lowestSimilarity: 83,
+      similarityVariance: 83,
+      stabilityRating: 'B+',
+    },  
+    optimizationSuggestions: 'Optimization Suggestions',
+    optimizationExample: 'Optimization Example',
   },
   // 应用装饰器到所有story
   decorators: [withLayout],
-} satisfies Meta<typeof MultipleTest>;
+} satisfies Meta<typeof AnalyseTest>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

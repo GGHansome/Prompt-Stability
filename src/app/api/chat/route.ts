@@ -7,7 +7,7 @@ import { ChatRequestBody } from '../type';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, apikey, systemMessage, tools, model }: ChatRequestBody = await req.json();
+  const { messages, apikey, system_message, tools, model }: ChatRequestBody = await req.json();
   let tools_json: Record<string, any> = {}
   tools.forEach((item: Tool) => {
     tools_json[item.name] = tool({
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       try {
         const result = streamText({
           model: openai(`${model}`),
-          system: systemMessage,
+          system: system_message,
           messages,
           tools: tools_json,
           onFinish: () => {

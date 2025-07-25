@@ -351,7 +351,7 @@ const PromptPlan = (props: IPromptPlanProps) => {
           </StyleText>
         </Flex>
       </Modal>
-    </div>
+      </div>
   );
 };
 

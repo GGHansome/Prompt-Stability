@@ -85,7 +85,7 @@ const Chat = (props: IChatProps) => {
     const newMessages = [...filterEmptyCustomMessages, ...messages, message]
     handleSubmit(event, {
       body: {
-        systemMessage,
+        system_message: systemMessage,
         tools,
         model,
         apiKey: "23424234",

@@ -103,7 +103,7 @@ const Chat = ({
   //所以不做缓存优化的话，单字的回复都会造成整个历史messages的重渲染
   const isEmptyMessages = messages.length === 0 && filteredEmptyCustomMessages.length === 0
   return (
-    <Flex vertical className="w-full h-screen">
+    <Flex vertical className="w-full h-full">
       <Flex
         ref={chatContainerRef}
         vertical
