@@ -8,7 +8,7 @@ import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter } from "@codemirror/lint";
 import { Button, Flex, InputNumber, InputNumberProps, Select, SelectProps, Slider } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
-import { StyleText } from "@/components/Common/StyledComponent/inedx";
+import { StyledText } from "@/components/Common/StyledComponent/inedx";
 
 export const DebounceTextArea = (props: TextAreaProps) => {
   const { value, onChange, ...rest } = props;
@@ -139,7 +139,7 @@ export const DebounceStepInput: React.FC<IStepInputProps> = ({
   return (
     <>
       <Flex justify="space-between" align="center">
-        <StyleText>{title}</StyleText>
+        <StyledText>{title}</StyledText>
         <Flex gap={2}>
           {initValue !== value && (
             <Button

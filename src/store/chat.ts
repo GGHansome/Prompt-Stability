@@ -14,10 +14,12 @@ export const chatSlice: StateCreator<
     const id = generateId();
     set((state) => {
       state.chats[id] = {
+        title: '',
         messages: [],
         custom_messages: [],
         system_message: '',
         model: 'gpt-4o-mini',
+        createdAt: new Date(),
         adjustment: {
           max_tokens: 2048,
           temperature: 1.00,

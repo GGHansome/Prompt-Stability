@@ -1,5 +1,6 @@
 import { MultipleResponseMessage, Tool } from "@/store/types";
 import { Message } from "ai";
+import { z } from "zod";
 
 // API 统一响应格式
 export interface ApiResponse<T = any> {
@@ -24,6 +25,8 @@ export interface OptimizeRequestBody {
   system_message: string;
   expected_response: string;
   multiple_response_messages: MultipleResponseMessage[];
+  averageSimilarity: number;
+  coefficientOfVariation: number;
 }
 
 // Multiple API 的响应数据类型

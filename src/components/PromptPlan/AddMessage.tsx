@@ -1,8 +1,7 @@
 import { Button, Card, Flex, Select } from "antd";
 import React from "react";
-import { StyleText } from "../Common/StyledComponent/inedx";
+import { StyledCard, StyledText } from "../Common/StyledComponent/inedx";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import styled from "styled-components";
 import { Message } from "ai";
 import { DebounceTextArea } from "../Common/DebounceForm";
 import { SetMessageType } from "@/store/types";
@@ -12,22 +11,17 @@ interface IAddMessageProps {
   setMessages: (sign: SetMessageType | number, index: number, content: any) => void;
 }
 
-export const StyledCard = styled(Card)`
-  .ant-card-body {
-    padding: 8px;
-  }
-`;
-
 const AddMessage = ({
   customMessages,
   setMessages,
 }: IAddMessageProps) => {
   return (
     <Flex vertical gap={4}>
-      {customMessages?.length > 0 && <StyleText>Prompt Messages</StyleText>}
+      {customMessages?.length > 0 && <StyledText>Prompt Messages</StyledText>}
       {customMessages?.map((message, index) => (
         <StyledCard
           className="focus-within:ring-1 focus-within:ring-blue-500"
+          padding="8px"
           key={message.id}
         >
           <Flex justify="space-between" align="center" className="w-full">

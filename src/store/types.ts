@@ -27,10 +27,12 @@ export type MultipleResponseMessage = {
 }
 
 type Chat = {
+  title: string;
   messages: Message[];
   custom_messages: Message[];
   system_message: string;
   model: string;
+  createdAt: Date;
   adjustment: Adjustment
   multiple_test: {
     expected_response: string;
@@ -54,8 +56,9 @@ export interface ChatStore {
 }
 
 export interface AppStore extends ChatStore {
-  
-} 
+  hasHydrated: boolean;
+  changeChatLoading: boolean;
+}
 
 export enum SetMessageType {
   ADD,

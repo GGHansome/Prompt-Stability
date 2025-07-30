@@ -50,6 +50,9 @@ importers:
       antd:
         specifier: ^5.24.7
         version: 5.24.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       dexie:
         specifier: ^4.0.11
         version: 4.0.11

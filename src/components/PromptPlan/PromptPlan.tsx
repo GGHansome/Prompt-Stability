@@ -22,9 +22,8 @@ import styled from "styled-components";
 import { DebounceCodeEditor, DebounceTextArea } from "../Common/DebounceForm";
 import { Adjustment, SetMessageType, Tool } from "@/store/types";
 import AdjustmentComponent from "./Adjustment";
-import { StyleText } from "../Common/StyledComponent/inedx";
+import { StyledText } from "../Common/StyledComponent/inedx";
 import AddMessage from "./AddMessage";
-
 
 interface IPromptPlanProps {
   model: string;
@@ -36,7 +35,11 @@ interface IPromptPlanProps {
   setModel: (model: string) => void;
   setAdjustment: (key: keyof Adjustment, value: any) => void;
   setTools: (tools: Tool[]) => void;
-  setMessages: (sign: SetMessageType | number, index: number, content: any) => void;
+  setMessages: (
+    sign: SetMessageType | number,
+    index: number,
+    content: any
+  ) => void;
 }
 
 const { Text } = Typography;
@@ -182,98 +185,117 @@ const PromptPlan = (props: IPromptPlanProps) => {
   };
 
   return (
-    <div className="p-6">
-      <Row align="middle">
-        <Col span={3}>
-          <StyleText>Model</StyleText>
-        </Col>
-        <Col span={20}>
-          <Select
-            popupMatchSelectWidth={false}
-            showSearch
-            variant="borderless"
-            placeholder="Select a model..."
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            value={model}
-            options={[
-              { value: "gpt-4o", label: "gpt-4o" },
-              { value: "gpt-4o-mini", label: "gpt-4o-mini" },
-              { value: "gpt-4.1", label: "gpt-4.1" },
-              { value: "gpt-4.1-mini", label: "gpt-4.1-mini" },
-            ]}
-            onChange={(value) => {
-              setModel(value);
-            }}
-          />
-        </Col>
-        <Col span={1}>
-          <AdjustmentComponent
-            toolNames={tools?.map((tool) => tool.name) || []}
-            adjustment={adjustment}
-            setAdjustment={setAdjustment}
-          />
-        </Col>
-      </Row>
-      <Row align="middle">
-        <Flex gap={16}>
-          <Space>
-            <LabelText>temp:</LabelText>
-            <ValueText>{adjustment?.temperature?.toFixed(2)}</ValueText>
-          </Space>
-          <Space>
-            <LabelText>tokens:</LabelText>
-            <ValueText>{adjustment?.max_tokens}</ValueText>
-          </Space>
-          <Space>
-            <LabelText>top_p:</LabelText>
-            <ValueText>{adjustment?.top_p?.toFixed(2)}</ValueText>
-          </Space>
-          {tools?.length > 0 && (
+    <>
+      <Flex vertical className="!p-6 h-full">
+        <Row align="middle">
+          <Col span={3}>
+            <StyledText>Model</StyledText>
+          </Col>
+          <Col span={20}>
+            <Select
+              popupMatchSelectWidth={false}
+              showSearch
+              variant="borderless"
+              placeholder="Select a model..."
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              value={model}
+              options={[
+                { value: "gpt-4o", label: "gpt-4o" },
+                { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+                { value: "gpt-4.1", label: "gpt-4.1" },
+                { value: "gpt-4.1-mini", label: "gpt-4.1-mini" },
+              ]}
+              onChange={(value) => {
+                setModel(value);
+              }}
+            />
+          </Col>
+          <Col span={1}>
+            <AdjustmentComponent
+              toolNames={tools?.map((tool) => tool.name) || []}
+              adjustment={adjustment}
+              setAdjustment={setAdjustment}
+            />
+          </Col>
+        </Row>
+        <Row align="middle">
+          <Flex gap={16}>
             <Space>
-              <LabelText>tool_choice:</LabelText>
-              <ValueText>
-                {typeof adjustment.tool_choice === "object"
-                  ? adjustment.tool_choice.toolName
-                  : adjustment.tool_choice}
-              </ValueText>
+              <LabelText>temp:</LabelText>
+              <ValueText>{adjustment?.temperature?.toFixed(2)}</ValueText>
             </Space>
-          )}
-        </Flex>
-      </Row>
-      <Divider />
-      <Row align="middle">
-        <Col span={3}>
-          <StyleText>Functions</StyleText>
-        </Col>
-        <Col span={20}>
-          {tools?.map((tool, index) => (
-            <Tag
-              key={tool.name}
-              bordered={false}
-              icon={<FunctionOutlined />}
-              closeIcon
-              onClick={() => {
-                setFunctionModalIndex(index);
-                setFunctionModalVisible(true);
-                vaildateFunctionFormat(JSON.stringify(tool, null, 2));
-                setFunctionTemplate(JSON.stringify(tool, null, 2));
-              }}
-              onClose={() => {
-                const newTools = [...tools];
-                newTools.splice(index, 1);
-                setTools(newTools);
-              }}
-              className="cursor-pointer hover:!bg-gray-100"
-            >
-              {tool.name}
-            </Tag>
-          ))}
-          {tools?.length === 0 && (
+            <Space>
+              <LabelText>tokens:</LabelText>
+              <ValueText>{adjustment?.max_tokens}</ValueText>
+            </Space>
+            <Space>
+              <LabelText>top_p:</LabelText>
+              <ValueText>{adjustment?.top_p?.toFixed(2)}</ValueText>
+            </Space>
+            {tools?.length > 0 && (
+              <Space>
+                <LabelText>tool_choice:</LabelText>
+                <ValueText>
+                  {typeof adjustment.tool_choice === "object"
+                    ? adjustment.tool_choice.toolName
+                    : adjustment.tool_choice}
+                </ValueText>
+              </Space>
+            )}
+          </Flex>
+        </Row>
+        <Divider />
+        <Row align="middle">
+          <Col span={3}>
+            <StyledText>Functions</StyledText>
+          </Col>
+          <Col span={20}>
+            {tools?.map((tool, index) => (
+              <Tag
+                key={tool.name}
+                bordered={false}
+                icon={<FunctionOutlined />}
+                closeIcon
+                onClick={() => {
+                  setFunctionModalIndex(index);
+                  setFunctionModalVisible(true);
+                  vaildateFunctionFormat(JSON.stringify(tool, null, 2));
+                  setFunctionTemplate(JSON.stringify(tool, null, 2));
+                }}
+                onClose={() => {
+                  const newTools = [...tools];
+                  newTools.splice(index, 1);
+                  setTools(newTools);
+                }}
+                className="cursor-pointer hover:!bg-gray-100"
+              >
+                {tool.name}
+              </Tag>
+            ))}
+            {tools?.length === 0 && (
+              <Button
+                type="text"
+                style={{ color: gray[3] }}
+                onClick={() => {
+                  if (functionModalIndex !== -1) {
+                    setFunctionTemplate("");
+                  }
+                  setFunctionModalIndex(-1);
+                  setFunctionModalVisible(true);
+                }}
+              >
+                Create...
+              </Button>
+            )}
+          </Col>
+          <Col span={1}>
             <Button
               type="text"
-              style={{ color: gray[3] }}
+              icon={<PlusOutlined />}
               onClick={() => {
                 if (functionModalIndex !== -1) {
                   setFunctionTemplate("");
@@ -281,42 +303,27 @@ const PromptPlan = (props: IPromptPlanProps) => {
                 setFunctionModalIndex(-1);
                 setFunctionModalVisible(true);
               }}
-            >
-              Create...
-            </Button>
-          )}
-        </Col>
-        <Col span={1}>
-          <Button
-            type="text"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              if (functionModalIndex !== -1) {
-                setFunctionTemplate("");
-              }
-              setFunctionModalIndex(-1);
-              setFunctionModalVisible(true);
-            }}
-          />
-        </Col>
-      </Row>
-      <Divider />
-      <Row>
-        <Flex vertical gap={2} className="w-full">
-          <StyleText>System message</StyleText>
-          <DebounceTextArea
-            onChange={(e) => {
-              setSystemMessage(e.target.value);
-            }}
-            value={system_message}
-            placeholder="Describe desired model behavior(tone, tool usage, response style)"
-            autoSize={{ minRows: 10, maxRows: 15 }}
-            rows={10}
-          />
-        </Flex>
-      </Row>
-      <Divider />
-      <AddMessage customMessages={customMessages} setMessages={setMessages}/>
+            />
+          </Col>
+        </Row>
+        <Divider />
+        <Row className="flex-1">
+          <Flex vertical gap={2} className="w-full">
+            <StyledText>System message</StyledText>
+            <DebounceTextArea
+              className="flex-1"
+              onChange={(e) => {
+                setSystemMessage(e.target.value);
+              }}
+              value={system_message}
+              placeholder="Describe desired model behavior(tone, tool usage, response style)"
+              autoSize={{ minRows: 10, maxRows: 20 }}
+            />
+          </Flex>
+        </Row>
+        <Divider />
+        <AddMessage customMessages={customMessages} setMessages={setMessages} />
+      </Flex>
       <Modal
         width={"60vw"}
         title="Function"
@@ -326,10 +333,10 @@ const PromptPlan = (props: IPromptPlanProps) => {
         onCancel={() => setFunctionModalVisible(false)}
       >
         <Flex vertical gap={4} className="w-full">
-          <StyleText>
+          <StyledText>
             The model will intelligently decide to call functions based on input
             it receives from the user.
-          </StyleText>
+          </StyledText>
           <DebounceCodeEditor
             status={vaildateJson.isPass ? undefined : "error"}
             code={functionTemplate}
@@ -339,19 +346,19 @@ const PromptPlan = (props: IPromptPlanProps) => {
               setFunctionTemplate(code);
             }}
           />
-          <StyleText type={vaildateJson.isPass ? "success" : "danger"}>
+          <StyledText type={vaildateJson.isPass ? "success" : "danger"}>
             {vaildateJson.errorMessage}
-          </StyleText>
-          <StyleText>
+          </StyledText>
+          <StyledText>
             <Space>
               <InfoCircleOutlined />
               You can use "[]" to declare one or more utility functions
               simultaneously
             </Space>
-          </StyleText>
+          </StyledText>
         </Flex>
       </Modal>
-      </div>
+    </>
   );
 };
 

@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import { DebounceStepInput, DebounceTextArea } from "../Common/DebounceForm";
 import {
   StyledCard,
-  StyleText,
+  StyledText,
 } from "@/components/Common/StyledComponent/inedx";
 import { MemoizedMarkdown } from "../Chat/Markdown";
 import { MultipleResponseMessage } from "@/store/types";
@@ -52,7 +52,7 @@ const MultipleTest = ({
   const [resultsModalVisible, setResultsModalVisible] = useState(false);
   const [resultsContent, setResultsContent] = useState("");
   return (
-    <Flex vertical className="w-full h-screen !p-6" gap={16}>
+    <Flex vertical className="w-full h-full !p-6" gap={16}>
       <DebounceStepInput
         title={"Test Number"}
         min={1}
@@ -63,7 +63,7 @@ const MultipleTest = ({
         onChange={(value) => setTestNumber(value as number)}
       />
       <Flex vertical gap={2}>
-        <StyleText>Expected Response Results</StyleText>
+        <StyledText>Expected Response Results</StyledText>
         <DebounceTextArea
           value={expectedResponse}
           onChange={(e) => setExpectedResponse(e.target.value)}
@@ -72,7 +72,7 @@ const MultipleTest = ({
       </Flex>
       <Flex vertical gap={2} flex={1} className="min-h-0">
         <Flex justify="space-between" align="center">
-          <StyleText>Response Results</StyleText>
+          <StyledText>Response Results</StyledText>
           <Space size={2}>
             {multipleResponseMessages?.length > 0 && (
               <>

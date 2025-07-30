@@ -73,6 +73,10 @@ const MultipleTest = (props: IMultipleTestProps) => {
   const onClear = () => {
     useAppStore.setState((state) => {
       state.chats[id].multiple_test.multiple_response_messages = [];
+      state.chats[id].optimization = {
+        suggest: '',
+        example: '',
+      }
     });
   };
 

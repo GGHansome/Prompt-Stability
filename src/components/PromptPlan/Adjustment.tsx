@@ -7,7 +7,7 @@ import {
   Space,
 } from "antd";
 import React, { useState } from "react";
-import { StyleText } from "@/components/Common/StyledComponent/inedx";
+import { StyledText } from "@/components/Common/StyledComponent/inedx";
 import { Adjustment } from "@/store/types";
 import { DebounceSelect, DebounceStepInput } from "@/components/Common/DebounceForm";
 
@@ -34,7 +34,7 @@ const AdjustmentComponent = ({
         >
           {toolNames.length > 0 && (
             <Flex justify="space-between" align="center">
-              <StyleText>Tool choice</StyleText>
+              <StyledText>Tool choice</StyledText>
               <Select
                 popupMatchSelectWidth={false}
                 variant="borderless"
@@ -89,10 +89,10 @@ const AdjustmentComponent = ({
             }}
           />
           <Flex vertical gap={2}>
-            <StyleText>Stop sequences</StyleText>
-            <StyleText className="!text-[11px]">
+            <StyledText>Stop sequences</StyledText>
+            <StyledText className="!text-[11px]">
               Enter sequence and press Tab
-            </StyleText>
+            </StyledText>
             <DebounceSelect
               suffixIcon={null}
               mode="multiple"
@@ -134,9 +134,9 @@ const AdjustmentComponent = ({
                 setStopSequenceInput(value);
               }}
             />
-            <StyleText className="!text-[12px] text-right">
+            <StyledText className="!text-[12px] text-right">
               {adjustment.stop_sequences?.length} / 4
-            </StyleText>
+            </StyledText>
           </Flex>
           <DebounceStepInput
             title="Top P"

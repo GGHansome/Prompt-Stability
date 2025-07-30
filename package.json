@@ -25,6 +25,7 @@
     "@uiw/react-codemirror": "^4.23.13",
     "ai": "^4.3.9",
     "antd": "^5.24.7",
+    "dayjs": "^1.11.13",
     "dexie": "^4.0.11",
     "idb-keyval": "^6.2.2",
     "immer": "^10.1.1",

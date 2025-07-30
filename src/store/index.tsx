@@ -29,6 +29,8 @@ export const useAppStore = create<AppStore>()(
         immer(
           (...args) => ({
             ...chatSlice(...args),
+            hasHydrated: false,
+            changeChatLoading: false,
           }),
         ),
         {
@@ -36,6 +38,11 @@ export const useAppStore = create<AppStore>()(
           // 只持久化 chats 状态
           partialize: (state) => ({ chats: state.chats }),
           storage: idbStorage,
+          onRehydrateStorage: () => (state) => {
+            if (state) {
+              state.hasHydrated = true;
+            }
+          },
         }
       ),
     { name: "chat-store" }
